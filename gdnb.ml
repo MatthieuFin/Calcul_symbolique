@@ -451,91 +451,11 @@ struct
   
   (* Division *)
   
-(*Division Newton*)
-
-(*
-  let renv k a =
-    let rec aux p acc =
-      match p with
-	  [] -> acc
-	| (dp,cp)::l -> aux l ((k - dp,cp)::acc)
-    in
-    if k >= (deg a) then
-      aux (a.abs) []
-    else
-      failwith "il faut k >= (deg a) !!"
-  ;;
-  
-  
-  let pol_mod p q =
-    let rec aux acc = function
-    [] -> acc
-      | (d,c)::l -> 
-	if d < (deg q) then
-	  (aux ((d,c)::acc) l)
-	else 
-	  aux acc l
-    in
-    aux [] (List.rev p)
-  ;;
-  
-  
-  let gi f borne = 
-    let rec aux i g =
-      if (2. ** i) >= borne then
-	g
-      else
-	(aux (i+.1.)
-	   (somme (mul {signe=true;abs=[(0,2)]} g) (oppose_gdnb (mul f (mul g g))))
-	)
-    in
-    aux 0. {signe=true;abs=[(0,1)]}
-  ;;
-  
-  
-  let split a n =
-    let rec aux acc p =
-      match p with
-	  [] -> acc
-	| (d,c)::l -> 
-	  if d < n then
-	    (aux ((d,c)::acc) l)
-	  else
-	    (aux acc l)
-    in
-    aux [] (List.rev a)
-  ;;
-  gnbr.abs;;
-  split gnbr.abs 2;;
-  
-  let div_Newton a b =
-    let m = deg a and
-	n = deg b in
-    let s = (gi {signe=true;abs=(renv n b)} (float_of_int (m - n + 1))) in
-    let srA = mul s {signe=true;abs=(renv m a)} in
-    let rQ = split srA.abs (m-n+1) in
-    let q = renv (m-n) {signe=true;abs=rQ} in
-    let r = (somme a (oppose_gdnb (mul b {signe=true;abs=q}))) in
-    (q,r)
-  ;;
-  *)
-(* Tests division *)
-1000000020003/100010000;; (*  9999 *)
-1000000020003 mod 100010000;; (* 30003 *)
-  
-  (* Division naive *)
-  (*
-  let div (a : gdnb) (b : gdnb) = 
-    let rec aux r q =
-      if ((compare_gdnb (somme r (oppose_gdnb b)) {signe = true; abs = []}) < 0) then
-	(q, r)
-      else
-	aux (somme r (oppose_gdnb b)) (somme q {signe = true;abs = [(0,1)]})
-    in
-    aux a {signe=true; abs=[]};;
-  *)
-
   (* Division par methode binaire *)
+  (** 
+      Calcul le couple (quotient,reste) 
+      de la division de deux gdnb positifs.
+  *)
   let div (a : gdnb) (b : gdnb) =
     let rec aux y l =
       if (compare_gdnb y a) > 0 then
@@ -558,15 +478,16 @@ struct
 	  [] -> acc
 	| e::ll -> somliste ll (somme acc e)
     in
-    let li = (aux b []) in
-    let pgm_q = (som (List.rev li) ((List.length li) - 1) ({signe = true; abs = []}) []) in
-    let pgm = fst pgm_q in
-    let q = somliste (snd pgm_q) {signe=true;abs=[]} in
-    q,(difference a pgm);;
-
-  (* PL *)
+    if b.abs = [] then failwith "Divisionpar zero !" else
+      let li = (aux b []) in
+      let pgm_q = (som (List.rev li) ((List.length li) - 1) ({signe = true; abs = []}) []) in
+      let pgm = fst pgm_q in
+      let q = somliste (snd pgm_q) {signe=true;abs=[]} in
+      q,(difference a pgm);;
+  
+  
   let modulo (a : gdnb) (b : gdnb) = snd (div a b);;    
-
+  
   let rec euclide (a : gdnb) (b : gdnb) = 
     if ((compare_gdnb b {signe=true;abs=[]}) = 0) then
       (a, {signe=true;abs=[(0,1)]}, {signe=true;abs=[]})
