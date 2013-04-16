@@ -73,8 +73,8 @@ struct
     abs : (int*int)list
   };;
   
-(* gnbr = "-2400005769" *)
-  let gnbr = {signe = false; abs = [(0,5769);(2,24)];};;
+  let zero = {signe = true; abs = [];};;
+  let unit = {signe = true; abs = [(0,1)];};;
   
 (**
    Params - s : string (composé d'une suite de chiffre avec eventuellement un '+' ou un '-' en début de chaine).
