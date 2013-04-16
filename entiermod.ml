@@ -61,17 +61,19 @@ type t = Gdnb.gdnb;;
   let inv = Gdnb.inv;;
 end
 
-
 module type SigEntiermod =
 sig
   type t;;
   val zero : t;;
   val unit : t;;
-  val somme : string -> string -> string
-  val mul : string -> string -> string
+  val somme : t -> t -> t
+  val mul : t -> t -> t
   val inv : string -> string
   val ( $$+ ) : string -> string -> string
   val ( $$* ) : string -> string -> string
+  val string_of_entier : t -> string
+  val entier_of_string : string -> t
+  val compare : t -> t -> int
 end
 
 
@@ -83,13 +85,24 @@ struct
   type t = E.t;;
   let zero = E.zero;;
   let unit = E.unit;;
-  let somme (a : string) (b : string) =
-    (E.string_of_entier (snd (E.div (E.somme (E.entier_of_string a) (E.entier_of_string b)) M.value)))
-  let mul   (a : string) (b : string) =
-    (E.string_of_entier (snd (E.div (E.mul (E.entier_of_string a) (E.entier_of_string b)) M.value)));;
+  let somme (a : t) (b : t) =
+    snd (E.div (E.somme a b) M.value);;
+  let mul   (a : t) (b : t) =
+    snd (E.div (E.mul a b) M.value);;
   let inv   (a : string)              = (E.string_of_entier (E.inv (E.entier_of_string a) M.value));;
-  let ( $$+ ) = somme;;
-  let ( $$* ) = mul;;
+  
+  let string_of_entier = E.string_of_entier;;
+  let entier_of_string = E. entier_of_string;;
+  let compare = E.compare;;
+  
+  let ( $$+ ) (a : string) (b : string) = 
+    let u = (E.entier_of_string a)
+    and v = (E.entier_of_string b)
+    in (E.string_of_entier (somme u v));;
+  let ( $$* ) (a : string) (b : string) =
+    let u = (E.entier_of_string a)
+    and v = (E.entier_of_string b)
+    in (E.string_of_entier (mul u v));;
 end
 
 
@@ -102,7 +115,7 @@ module P3 = Entiermod(Entier)(N3);;
 (* P5 = Z/5Z *)
 module P5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
 
-P3.("3" $$+ "3");;
+P3.("3" $$* "3");;
 
 P5.("3" $$+ "3");;
 

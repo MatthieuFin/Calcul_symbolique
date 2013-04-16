@@ -14,7 +14,7 @@
 
 (*# use "gdnb.ml";;*)
 # use "entiermod.ml";;
-
+(*
 module type coeff_poly =
 sig
   type t = Gdnb.gdnb;;
@@ -26,12 +26,11 @@ sig
   val string_of_entier : t -> string;;
   val entier_of_string : string -> t;;
 end
+*)
 
-module Polynome (Ent : coeff_poly) =
+module Polymod (Ent : SigEntiermod) =
 struct
   type polynome = (int * Ent.t) list;;
-  
-  let (p : polynome) = [(0,(Ent.entier_of_string "1"));(1,(Ent.entier_of_string "2"))];;
   
   let rec coeff (i : int) (p : polynome) = 
     match p with
@@ -71,3 +70,7 @@ let somme (p1 : polynome) (p2 : polynome) =
 ;;
 
 end
+
+module E5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
+module P5 = Polymod(E5);;
+let p = [(0,(E5.entier_of_string "1"));(1,(E5.entier_of_string "2"))];;
