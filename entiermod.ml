@@ -12,7 +12,8 @@
 (*                                                                     *)
 (***********************************************************************)
 
-#use "gdnb.ml";;
+#load "gdnb.cmo";;
+open Gdnb;;
 
 (* Type du module contenant la valeur du modulo *)
 module type MakeEntier =

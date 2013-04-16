@@ -12,6 +12,7 @@
 (*                                                                     *)
 (***********************************************************************)
 
+
 module type gdnb =
 sig
   val base : int
@@ -54,6 +55,7 @@ sig
   val ( $<= ) : string -> string -> bool
   val ( $>= ) : string -> string -> bool
 end
+
 module Gdnb : gdnb = 
 struct
   
