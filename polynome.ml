@@ -28,7 +28,7 @@ sig
 end
 *)
 
-module Polymod (Ent : SigEntiermod) =
+module Polynome (Ent : SigEntiermod) =
 struct
   type polynome = (int * Ent.t) list;;
   
@@ -72,5 +72,5 @@ let somme (p1 : polynome) (p2 : polynome) =
 end
 
 module E5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
-module P5 = Polymod(E5);;
+module P5 = Polynome(E5);;
 let p = [(0,(E5.entier_of_string "1"));(1,(E5.entier_of_string "2"))];;
