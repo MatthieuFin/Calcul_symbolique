@@ -1,3 +1,17 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                             Projet de CS                            *)
+(*                                                                     *)
+(* Fichier : entiermod.ml                                              *)
+(* Auteur : Matthieu Fin                                               *)
+(* Date : 16/04/13                                                     *)
+(*                                                                     *)
+(*                          Licence informatique 2eme année 2012/2013  *)
+(*                                  UFR-Sciences et Techniques         *)
+(*                                     Université de Rouen             *)
+(*                                                                     *)
+(***********************************************************************)
+
 #use "gdnb.ml";;
 
 (* Type du module contenant la valeur du modulo *)
