@@ -26,24 +26,32 @@ module type SigEntier =
 sig
   module Make (V : sig val value : Gdnb.gdnb end) : MakeEntier
   type t = Gdnb.gdnb
+  val zero : Gdnb.gdnb
+  val unit : Gdnb.gdnb
+  val compare : Gdnb.gdnb -> Gdnb.gdnb -> int
   val string_of_entier : Gdnb.gdnb -> string
   val entier_of_string : string -> Gdnb.gdnb
   val div : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb * Gdnb.gdnb
   val mul : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
   val somme : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
   val inv : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
+
 end
   
 (* Entier Fournit des fonctions sur les gdnb ainsi
    qu'une valeur modulo dans son module Entier.Make *)
 module Entier : SigEntier =
 struct
-  type t = Gdnb.gdnb;;
+type t = Gdnb.gdnb;;
   module Make = functor (V : sig val value : Gdnb.gdnb end) ->
   struct
     type t = Gdnb.gdnb;;
     let value = V.value;;
   end
+  let zero = Gdnb.zero;;
+  let unit = Gdnb.unit;;
+  let compare = Gdnb.compare_gdnb;;
+  
   let string_of_entier = Gdnb.string_of_gdnb;;
   let entier_of_string = Gdnb.gdnb_of_string;;
   let div = Gdnb.div;;
@@ -52,12 +60,28 @@ struct
   let inv = Gdnb.inv;;
 end
 
+
+module type SigEntiermod =
+sig
+  type t;;
+  val zero : t;;
+  val unit : t;;
+  val somme : string -> string -> string
+  val mul : string -> string -> string
+  val inv : string -> string
+  val ( $$+ ) : string -> string -> string
+  val ( $$* ) : string -> string -> string
+end
+
+
 (* Entiermod est parametre par deux modules de type
    SigEntier et MakeEntier. Permettant de creer un module
    representant Z/M.valueZ *)
-module Entiermod (E : SigEntier) (M : MakeEntier) = 
+module Entiermod (E : SigEntier) (M : MakeEntier) : SigEntiermod =
 struct
-  type t = M.t;;
+  type t = E.t;;
+  let zero = E.zero;;
+  let unit = E.unit;;
   let somme (a : string) (b : string) =
     (E.string_of_entier (snd (E.div (E.somme (E.entier_of_string a) (E.entier_of_string b)) M.value)))
   let mul   (a : string) (b : string) =
