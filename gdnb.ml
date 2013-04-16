@@ -16,7 +16,8 @@ module type gdnb =
 sig
   val base : int
   type gdnb = { signe : bool; abs : (int * int) list; }
-  val gnbr : gdnb
+  val zero : gdnb
+  val unit : gdnb
   val gdnb_of_string : string -> gdnb
   val string_of_gdnb : gdnb -> string
   val compare_gdnb : gdnb -> gdnb -> int
