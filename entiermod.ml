@@ -36,7 +36,8 @@ sig
   val mul : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
   val somme : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
   val inv : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
-
+  val oppose : t -> t
+  
 end
   
 (* Entier Fournit des fonctions sur les gdnb ainsi
@@ -59,6 +60,7 @@ type t = Gdnb.gdnb;;
   let mul = Gdnb.mul;;
   let somme = Gdnb.somme;;
   let inv = Gdnb.inv;;
+  let oppose = Gdnb.oppose_gdnb;;
 end
 
 module type SigEntiermod =
@@ -74,6 +76,7 @@ sig
   val string_of_entier : t -> string
   val entier_of_string : string -> t
   val compare : t -> t -> int
+  val oppose : t -> t
 end
 
 
@@ -94,6 +97,7 @@ struct
   let string_of_entier = E.string_of_entier;;
   let entier_of_string = E. entier_of_string;;
   let compare = E.compare;;
+  let oppose = E.oppose;;
   
   let ( $$+ ) (a : string) (b : string) = 
     let u = (E.entier_of_string a)
@@ -117,7 +121,7 @@ module P5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_s
 
 P3.("3" $$* "3");;
 
-P5.("3" $$+ "3");;
+P5.("5" $$+ "0");;
 
 P5.("3" $$+ "2");;
 (* string = "0" *)

@@ -473,7 +473,8 @@ struct
       Calcul le couple (quotient,reste) 
       de la division de deux gdnb positifs.
   *)
-  let div (a : gdnb) (b : gdnb) =
+  let div (aa : gdnb) (b : gdnb) =
+    let a = {signe = true; abs = aa.abs} in
     let rec aux y l =
       if (compare_gdnb y a) > 0 then
 	l
@@ -496,11 +497,17 @@ struct
 	| e::ll -> somliste ll (somme acc e)
     in
     if b.abs = [] then failwith "Divisionpar zero !" else
-      let li = (aux b []) in
-      let pgm_q = (som (List.rev li) ((List.length li) - 1) ({signe = true; abs = []}) []) in
-      let pgm = fst pgm_q in
-      let q = somliste (snd pgm_q) {signe=true;abs=[]} in
-      q,(difference a pgm);;
+      if (compare_gdnb a zero) = 0 then 
+	zero,b
+      else
+	let li = (aux b []) in
+	let pgm_q = (som (List.rev li) ((List.length li) - 1) ({signe = true; abs = []}) []) in
+	let pgm = fst pgm_q in
+	let q = somliste (snd pgm_q) {signe=true;abs=[]} in
+	if (compare_gdnb aa zero) < 0 then
+	  (oppose_gdnb (somme unit q)), (oppose_gdnb (somme {signe=true;abs=a.abs} (oppose_gdnb (mul b (somme unit q)))))
+	else
+	  q,(difference a pgm);;
   
   
   let modulo (a : gdnb) (b : gdnb) = snd (div a b);;    

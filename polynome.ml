@@ -48,29 +48,129 @@ struct
 	(pol_is_equal l1 l2)
       | _ -> false
   ;;
+  
+  let somme (p1 : polynome) (p2 : polynome) = 
+    let rec aux p q res = 
+      match p, q with
+	  [], [] -> List.rev res
+	| [], e::rq -> aux [] rq (e::res)
+	| e::rp, [] -> aux rp [] (e::res)
+	| ((dp,cp)::rp), ((dq,cq)::rq) when dp < dq -> 
+	  aux rp q ((dp,cp)::res)
+	| ((dp,cp)::rp), ((dq,cq)::rq) when dp > dq -> 
+	  aux p rq ((dq,cq)::res)
+	| ((dp,cp)::rp), ((dq,cq)::rq) -> 
+	  let s = (Ent.somme cp cq) in
+	  if (Ent.compare s Ent.zero) = 0 then
+	    aux rp rq res
+	  else
+	    aux rp rq ((dp,s)::res)
+    in
+    aux p1 p2 []
+  ;;
+  
+  let difference (p1 : polynome) (p2 : polynome) =
+    let rec opp p acc =
+      match p with
+	  []        -> List.rev acc
+	| (d,c)::rp -> opp rp ((d, Ent.oppose c)::acc)
+    in
+    somme p1 (opp p2 []);;
 
-let somme (p1 : polynome) (p2 : polynome) = 
-  let rec aux p q res = 
-    match p, q with
-	[], [] -> List.rev res
-      | [], e::rq -> aux [] rq (e::res)
-      | e::rp, [] -> aux rp [] (e::res)
-      | ((dp,cp)::rp), ((dq,cq)::rq) when dp < dq -> 
-	aux rp q ((dp,cp)::res)
-      | ((dp,cp)::rp), ((dq,cq)::rq) when dp > dq -> 
-	aux p rq ((dq,cq)::res)
-      | ((dp,cp)::rp), ((dq,cq)::rq) -> 
-	let s = (Ent.somme cp cq) in
-	if (Ent.compare s Ent.zero) = 0 then
-	  aux rp rq res
+
+(* kara *)
+
+let separe (p : polynome) n = 
+  let rec aux (p : polynome) (p1 : polynome) (p2 : polynome) = 
+    match p with
+	[] -> ((List.rev p1),(List.rev p2))
+      | (dp,cp)::rp -> 
+	if dp < n/2
+	then
+	  aux rp ((dp,cp)::p1) p2
 	else
-	  aux rp rq ((dp,s)::res)
+	  aux rp p1 ((dp - n/2,cp)::p2)
   in
-  aux p1 p2 []
+  aux p [] []
+;;
+  
+let deg (pol : polynome) =
+  let rec aux p acc =
+      match p with
+	  [] -> acc
+	| (dp,cp)::l when dp > acc -> aux l dp
+	| (dp,cp)::l -> aux l acc
+  in
+  aux pol 0
+;;
+
+let degPair (pol : polynome) = 
+  let d = deg pol in
+  if (d mod 2) == 0
+  then
+    d
+  else
+    d + 1
+;;
+
+let max (a : int) (b : int) = 
+  if a > b
+  then a
+  else b
+;;
+
+let ajoutDeg (p : polynome) (n : int) =
+  let rec aux (p : polynome) (p1 : polynome) (n : int) =
+    match p with 
+      []        -> List.rev p1
+    | (d, c)::p -> aux p ((d + n, c)::p1) n
+  in aux p [] n
+;;
+
+let rec mul (p1 : polynome) (p2 : polynome) =
+  let n = max (degPair p1) (degPair p2) in
+  if (n < 1) then
+    let res = (Ent.mul (coeff n p1) (coeff n p2)) in
+    if (Ent.compare res Ent.zero) = 0 then
+      []
+    else
+      [(n*n,res)]
+  else
+    let a = (separe p1 n) and b = (separe p2 n) in
+    let c0 = mul (fst a) (fst b) and
+	c2 = mul (snd a) (snd b) in
+    let c1 = (difference (difference (mul (somme (fst a) (snd a)) (somme (fst b) (snd b))) (c0)) (c2) ) in
+    (somme (somme (c0) (ajoutDeg c1 (n/2))) (ajoutDeg c2 n))
 ;;
 
 end
 
 module E5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
 module P5 = Polynome(E5);;
-let p = [(0,(E5.entier_of_string "1"));(1,(E5.entier_of_string "2"))];;
+let p = [(0,(E5.entier_of_string "3"));(1,(E5.entier_of_string "4"))];;
+(*open P5;;*)
+module E100 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "100" end));;
+module P100 = Polynome(E100);;
+open P100;;
+
+let p = [(0,(E100.entier_of_string "3"));(3,(E100.entier_of_string "7"))];;
+let q = [(0,(E100.entier_of_string "1"));(6,(E100.entier_of_string "12"))];;
+
+let res = P100.mul p q;;
+E100.string_of_entier (P100.coeff 0 res);;
+E100.string_of_entier (P100.coeff 3 res);;
+E100.string_of_entier (P100.coeff 5 res);;
+E100.string_of_entier (P100.coeff 6 res);;
+E100.string_of_entier (P100.coeff 7 res);;
+E100.string_of_entier (P100.coeff 9 res);;
+E100.string_of_entier (P100.coeff 10 res);;
+E100.string_of_entier (P100.coeff 11 res);;
+(*
+let p = [(0,(E100.entier_of_string "3"));(1,(E100.entier_of_string "2"))];;
+let q = [(0,(E100.entier_of_string "1"));(2,(E100.entier_of_string "2"))];;
+let res = P100.mul p q;;
+E100.string_of_entier (P100.coeff 0 res);;
+E100.string_of_entier (P100.coeff 1 res);;
+E100.string_of_entier (P100.coeff 2 res);;
+E100.string_of_entier (P100.coeff 3 res);;
+E100.string_of_entier (P100.coeff 4 res);;*)
