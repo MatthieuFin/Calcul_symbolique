@@ -496,7 +496,7 @@ struct
 	  [] -> acc
 	| e::ll -> somliste ll (somme acc e)
     in
-    if b.abs = [] then failwith "Divisionpar zero !" else
+    if b.abs = [] then failwith "Division par zero !" else
       if (compare_gdnb a zero) = 0 then 
 	zero,zero
       else
