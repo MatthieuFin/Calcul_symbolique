@@ -39,7 +39,7 @@ struct
   (* Affichage *)
   type polyStr = (int * string) list;;
   
-  let poly_of_polyString (p : polyStr) =
+  let poly_of_polyStr (p : polyStr) =
     let rec aux (q : polyStr) (acc : polynome) =
       match q with
 	  [] -> List.rev acc
@@ -82,7 +82,8 @@ struct
 	  aux q acc^(signe q c)^(absCoeff c)^"x"
 	|e::q -> aux q acc
     in
-    aux p "";;
+    let res = aux p "" in
+    if res = "" then "0" else res;;
   
   (* Implentation *)
   
@@ -289,7 +290,8 @@ E100.string_of_entier (P100.coeff 0 (snd d));;
 E100.string_of_entier (P100.coeff 1 (snd d));;
 
 (* test affichage ... *)
-string_of_poly (somme (poly_of_polyString [0,"1";1,"3"]) (poly_of_polyString [1,"199"]));;
+string_of_poly (somme (poly_of_polyStr [(0,"1");(1,"3")]) (poly_of_polyStr [(1,"199")]));;
+string_of_poly (somme (poly_of_polyStr [(0,"-3")]) (poly_of_polyStr [(0,"3")]));;
 
 (*  
 module E5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
