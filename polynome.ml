@@ -14,24 +14,77 @@
 
 (*# use "gdnb.ml";;*)
 # use "entiermod.ml";;
-(*
+
+(* Type minimum des modules pouvant 
+   servir de coefficients aux polynomes. *)
 module type coeff_poly =
 sig
-  type t = Gdnb.gdnb;;
+  type t;;
   val zero : t;;
   val unit : t;;
   val compare : t -> t -> int;;
+  val oppose : t -> t
   val somme : t -> t -> t;;
   val mul : t -> t -> t;;
   val string_of_entier : t -> string;;
   val entier_of_string : string -> t;;
 end
-*)
+
 
 (* Polynome a coefficients dans Zn *)
-module Polynome (Ent : SigEntiermod) =
+module Polynome (Ent : coeff_poly) =
 struct
   type polynome = (int * Ent.t) list;;
+  
+  (* Affichage *)
+  type polyStr = (int * string) list;;
+  
+  let poly_of_polyString (p : polyStr) =
+    let rec aux (q : polyStr) (acc : polynome) =
+      match q with
+	  [] -> List.rev acc
+	| (d, c) :: qq ->
+	  aux qq ((d, Ent.entier_of_string c)::acc)
+    in
+    aux p [];;
+  
+  let string_of_poly p= 
+    let absCoeff (e : Ent.t) =
+      if (Ent.compare e Ent.zero) >= 0 then
+	Ent.string_of_entier e
+      else
+	Ent.string_of_entier (Ent.oppose e)
+    in
+    let signe s c =
+      match s, c with 
+	  [], i when (Ent.compare i Ent.zero) > 0 -> ""
+	| _, i  when (Ent.compare i Ent.zero) < 0 -> " - "
+	| _, _                                    -> " + " 
+    in
+    let rec aux p acc =
+      match p with
+	  [] -> acc
+	|(d, c)::q when d = 0 -> aux q acc^(signe q c)^(absCoeff c)
+	|(d, c)::q when ((Ent.compare c Ent.unit) = 0
+			|| (Ent.compare c (Ent.oppose Ent.unit)) = 0)
+	    && d > 1 ->
+	  aux q acc^(signe q c)^"x^"^(string_of_int d)
+	|(d, c)::q when ((Ent.compare c Ent.zero) < 0) && d > 1 ->
+	  aux q acc^(signe q c)^(absCoeff c)^"x^"^(string_of_int d)
+	|(d, c)::q when ((Ent.compare c Ent.zero) > 0) && d > 1 ->
+	  aux q acc^(signe q c)^(absCoeff c)^"x^"^(string_of_int d)
+	|(d, c)::q when ((Ent.compare c Ent.unit) = 0
+			|| (Ent.compare c (Ent.oppose Ent.unit)) = 0) ->
+	  aux q acc^(signe q c)^(absCoeff c)^"x"
+	|(d, c)::q when (Ent.compare c Ent.zero) < 0 ->
+	  aux q acc^(signe q c)^(absCoeff c)^"x"
+	|(d, c)::q when (Ent.compare c Ent.zero) > 0 ->
+	  aux q acc^(signe q c)^(absCoeff c)^"x"
+	|e::q -> aux q acc
+    in
+    aux p "";;
+  
+  (* Implentation *)
   
   let rec coeff (i : int) (p : polynome) = 
     match p with
@@ -235,6 +288,8 @@ E100.string_of_entier (P100.coeff 1 (fst d));;
 E100.string_of_entier (P100.coeff 0 (snd d));;
 E100.string_of_entier (P100.coeff 1 (snd d));;
 
+(* test affichage ... *)
+string_of_poly (somme (poly_of_polyString [0,"1";1,"3"]) (poly_of_polyString [1,"199"]));;
 
 (*  
 module E5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
