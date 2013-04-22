@@ -182,6 +182,7 @@ struct
   ;;
   
   let rec mul (p1 : polynome) (p2 : polynome) =
+    if (p1 = []) || (p2 = []) then [] else
     let n = max (degPair p1) (degPair p2) in
     if (n < 1) then
       let res = (Ent.mul (coeff n p1) (coeff n p2)) in
