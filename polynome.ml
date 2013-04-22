@@ -154,18 +154,14 @@ module P100 = Polynome(E100);;
 open P100;;
 
 let p = [(0,(E100.entier_of_string "3"));(3,(E100.entier_of_string "7"))];;
-let q = [(0,(E100.entier_of_string "1"));(6,(E100.entier_of_string "12"))];;
+let q = [(0,(E100.entier_of_string "1"));(6,(E100.entier_of_string "-12"))];;
 
 let res = P100.mul p q;;
 E100.string_of_entier (P100.coeff 0 res);;
 E100.string_of_entier (P100.coeff 3 res);;
-E100.string_of_entier (P100.coeff 5 res);;
 E100.string_of_entier (P100.coeff 6 res);;
-E100.string_of_entier (P100.coeff 7 res);;
 E100.string_of_entier (P100.coeff 9 res);;
-E100.string_of_entier (P100.coeff 10 res);;
-E100.string_of_entier (P100.coeff 11 res);;
-(*
+
 let p = [(0,(E100.entier_of_string "3"));(1,(E100.entier_of_string "2"))];;
 let q = [(0,(E100.entier_of_string "1"));(2,(E100.entier_of_string "2"))];;
 let res = P100.mul p q;;
@@ -173,4 +169,9 @@ E100.string_of_entier (P100.coeff 0 res);;
 E100.string_of_entier (P100.coeff 1 res);;
 E100.string_of_entier (P100.coeff 2 res);;
 E100.string_of_entier (P100.coeff 3 res);;
-E100.string_of_entier (P100.coeff 4 res);;*)
+
+let p = [(0,(E100.entier_of_string "3"));(1,(E100.entier_of_string "2"))];;
+let q = [(2,(E100.entier_of_string "2"))];;
+let res = P100.mul p q;;
+E100.string_of_entier (P100.coeff 2 res);;
+E100.string_of_entier (P100.coeff 3 res);;

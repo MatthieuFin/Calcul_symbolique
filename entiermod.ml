@@ -61,6 +61,7 @@ type t = Gdnb.gdnb;;
   let somme = Gdnb.somme;;
   let inv = Gdnb.inv;;
   let oppose = Gdnb.oppose_gdnb;;
+  
 end
 
 module type SigEntiermod =
@@ -96,7 +97,7 @@ struct
   
   let string_of_entier = E.string_of_entier;;
   let entier_of_string = E. entier_of_string;;
-  let compare = E.compare;;
+  let compare (a : t) (b : t) = E.compare (snd (E.div a M.value)) (snd (E.div b M.value));;
   let oppose = E.oppose;;
   
   let ( $$+ ) (a : string) (b : string) = 

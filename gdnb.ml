@@ -498,7 +498,7 @@ struct
     in
     if b.abs = [] then failwith "Divisionpar zero !" else
       if (compare_gdnb a zero) = 0 then 
-	zero,b
+	zero,zero
       else
 	let li = (aux b []) in
 	let pgm_q = (som (List.rev li) ((List.length li) - 1) ({signe = true; abs = []}) []) in
