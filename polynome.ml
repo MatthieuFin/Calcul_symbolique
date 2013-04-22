@@ -29,8 +29,7 @@ sig
   val string_of_entier : t -> string;;
   val entier_of_string : string -> t;;
 end
-
-
+  
 (* Polynome a coefficients dans Zn *)
 module Polynome (Ent : coeff_poly) =
 struct
@@ -293,6 +292,11 @@ E100.string_of_entier (P100.coeff 1 (snd d));;
 string_of_poly (somme (poly_of_polyStr [(0,"1");(1,"3")]) (poly_of_polyStr [(1,"199")]));;
 string_of_poly (somme (poly_of_polyStr [(0,"-3")]) (poly_of_polyStr [(0,"3")]));;
 
+
+
+
+
+
 (*  
 module E5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
 module P5 = Polynome(E5);;
@@ -325,3 +329,30 @@ let res = P100.mul p q;;
 E100.string_of_entier (P100.coeff 2 res);;
 E100.string_of_entier (P100.coeff 3 res);;
 *)
+
+
+
+
+(* Test dans Z *)
+
+module Coeff_Z : coeff_poly =
+struct
+  type t = Gdnb.gdnb;;
+  let zero = Gdnb.zero;;
+  let unit = Gdnb.unit;;
+  let compare = Gdnb.compare_gdnb;;
+  let oppose = Gdnb.oppose_gdnb;;
+  let somme = Gdnb.somme;;
+  let mul = Gdnb.mul;;
+  let string_of_entier = Gdnb.string_of_gdnb;;
+  let entier_of_string = Gdnb.gdnb_of_string;;
+end
+
+module P = Polynome(Coeff_Z);;
+let p = P.poly_of_polyStr [(0, "-3"); (3, "7")];;
+let q = P.poly_of_polyStr [(0, "1"); (6, "-12")];;
+
+P.string_of_poly p;;
+P.string_of_poly q;;
+
+P.string_of_poly (P.mul p q);;

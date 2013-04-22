@@ -533,7 +533,7 @@ struct
       a
     else
       let (a, b, c) = euclide a b in
-      a;; 
+      a;;
   
   (**
      Calcul l'inverse de a modulo n.
