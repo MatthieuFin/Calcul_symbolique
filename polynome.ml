@@ -262,6 +262,43 @@ struct
     (q,r)
   ;;
   
+  
+  (* Implantation d'euclide pour le calcul
+     du pgcd et de l'inverse de polynomes. *)
+  
+  let rec euclide (a : polynome) (b : polynome) = 
+    if (deg b) < 1 then 
+      (a, [(0,(Ent.entier_of_string "1"))], [])
+    else
+      let dd = div a b in
+      let (dp, xp, yp) = euclide b (snd dd) in
+      let (d, x, y) = (dp, yp, difference xp (mul (fst dd) yp)) in
+      (d, x, y);;
+  
+
+  (**
+     Retourne le pgcd de a et de b.
+     @param a
+     @param b
+     @return pgcd(a, b)
+  *)
+  let pgcd (a : polynome) (b : polynome) =
+    if b = [] then
+      a
+    else
+      let (a, b, c) = euclide a b in
+      a;;
+(*  
+  (**
+     Calcul l'inverse de a modulo n.
+  *)
+  let rec inv (a : gdnb) (n : gdnb) =
+    if (compare_gdnb a {signe=true;abs=[]} < 0) then (inv (somme a n) n) else 
+    let (p, u, v) = (euclide a n) in
+    match p with
+	{signe=true;abs=[(0,1)]} -> u
+      | _ -> failwith ((string_of_gdnb a)^" non inversible dans Z/"^(string_of_gdnb n)^"Z");;
+  *)
 end
 
 module E100 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "100" end));;
@@ -274,6 +311,17 @@ E100.string_of_entier (P100.coeff 3 p);;
 
 E100.string_of_entier (P100.coeff 0 pp);;
 E100.string_of_entier (P100.coeff 3 pp);;
+
+(*
+let test_euclide = 
+    let r = euclide (poly_of_polyStr [0,"3"]) (poly_of_polyStr [0,"9"]) in
+    match r with
+	a,b,c -> (string_of_poly a),(string_of_poly b),(string_of_poly c);;
+*)
+let test_euclide = 
+    let r = euclide (poly_of_polyStr [(4,"2");(3,"-3");(1,"-3");(0,"-2")]) (poly_of_polyStr [(2,"1");(0,"-1")]) in
+    match r with
+	a,b,c -> (string_of_poly a),(string_of_poly b),(string_of_poly c);;
 
 
 let a = [(0,(E100.entier_of_string "3"));(1,(E100.entier_of_string "2"));(3,(E100.entier_of_string "1"))];;
