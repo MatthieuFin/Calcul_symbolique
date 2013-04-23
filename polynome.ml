@@ -19,7 +19,7 @@
    servir de coefficients aux polynomes. *)
 module type coeff_poly =
 sig
-  type t;;
+  type t = Gdnb.gdnb;;
   val zero : t;;
   val unit : t;;
   val compare : t -> t -> int;;
@@ -30,9 +30,10 @@ sig
   val entier_of_string : string -> t;;
 end
   
+  
 module type SigPolynome =
 sig
-  type polynome
+  type polynome = (int * Gdnb.gdnb) list;;
   type polyStr = (int * string) list
   val poly_of_polyStr : polyStr -> polynome
   val polyStr_of_poly : polynome -> polyStr
@@ -54,13 +55,26 @@ sig
   val euclide : polynome -> polynome -> polynome * polynome * polynome
   val pgcd : polynome -> polynome -> polynome
 end
-  
+  (*
+module type SigMakePolynome =
+  functor (V : sig type polynome val value : polynome end) ->
+sig val value : V.polynome end*)    
+
+module type SigMakePolynome =
+sig
+  type polynome = (int * Gdnb.gdnb) list;;
+  val value : polynome
+end
   
 (* Polynome a coefficients dans Zn *)
-module Polynome (Ent : coeff_poly) : SigPolynome=
+module Polynome (Ent : coeff_poly) (*: SigPolynome*)=
 struct
   type polynome = (int * Ent.t) list;;
-  
+  module MakePolynome (*: SigMakePolynome*) = functor (V : sig type polynome = (int * Ent.t) list val value : polynome end) ->
+  struct
+    type polynome = V.polynome;;
+    let value = V.value;;
+  end
   (* Affichage *)
   type polyStr = (int * string) list;;
   
@@ -441,4 +455,6 @@ P.string_of_poly p;;
 P.string_of_poly q;;
 
 P.string_of_poly (P.mul p q);;
+
+
 

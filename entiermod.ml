@@ -66,7 +66,7 @@ end
 
 module type SigEntiermod =
 sig
-  type t;;
+  type t = Gdnb.gdnb;;
   val zero : t;;
   val unit : t;;
   val somme : t -> t -> t
