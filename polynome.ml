@@ -30,8 +30,34 @@ sig
   val entier_of_string : string -> t;;
 end
   
+module type SigPolynome =
+sig
+  type polynome
+  type polyStr = (int * string) list
+  val poly_of_polyStr : polyStr -> polynome
+  val polyStr_of_poly : polynome -> polyStr
+  val string_of_poly : polynome -> string
+  val pol_is_equal : polynome -> polynome -> bool
+  val somme : polynome -> polynome -> polynome
+  val difference : polynome -> polynome -> polynome
+  val separe : polynome -> int -> polynome * polynome
+  val deg : polynome -> int
+  val degPair : polynome -> int
+  val max : int -> int -> int
+  val ajoutDeg : polynome -> int -> polynome
+  val mul : polynome -> polynome -> polynome
+  val renv : int -> polynome -> polynome
+  val pol_mod : polynome -> polynome -> polynome
+  val gi : polynome -> float -> polynome
+  val split : polynome -> int -> polynome
+  val div : polynome -> polynome -> polynome * polynome
+  val euclide : polynome -> polynome -> polynome * polynome * polynome
+  val pgcd : polynome -> polynome -> polynome
+end
+  
+  
 (* Polynome a coefficients dans Zn *)
-module Polynome (Ent : coeff_poly) =
+module Polynome (Ent : coeff_poly) : SigPolynome=
 struct
   type polynome = (int * Ent.t) list;;
   
@@ -45,9 +71,17 @@ struct
 	| (d, c) :: qq ->
 	  aux qq ((d, Ent.entier_of_string c)::acc)
     in
-    aux p [];;
+    ((aux p []) : polynome);;
   
-  let string_of_poly p= 
+  let polyStr_of_poly (a : polynome) =
+    let rec aux p acc =
+      match p with
+	  [] -> acc
+	| (i,n)::r -> aux r ((i,(Ent.string_of_entier n))::acc)
+    in
+    ((aux a []) : polyStr);;
+  
+  let string_of_poly (p : polynome)= 
     let absCoeff (e : Ent.t) =
       if (Ent.compare e Ent.zero) >= 0 then
 	Ent.string_of_entier e
@@ -106,7 +140,7 @@ struct
   let somme (p1 : polynome) (p2 : polynome) = 
     let rec aux p q res = 
       match p, q with
-	  [], [] -> List.rev res
+	  [], [] -> ((List.rev res) : polynome)
 	| [], e::rq -> aux [] rq (e::res)
 	| e::rp, [] -> aux rp [] (e::res)
 	| ((dp,cp)::rp), ((dq,cq)::rq) when dp < dq -> 
@@ -126,7 +160,7 @@ struct
   let difference (p1 : polynome) (p2 : polynome) =
     let rec opp p acc =
       match p with
-	  []        -> List.rev acc
+	  []        -> ((List.rev acc) : polynome)
 	| (d,c)::rp -> opp rp ((d, Ent.oppose c)::acc)
     in
     somme p1 (opp p2 []);;
@@ -134,10 +168,10 @@ struct
   
 (* kara *)
   
-  let separe (p : polynome) n = 
+  let separe (p : polynome) (n : int) = 
     let rec aux (p : polynome) (p1 : polynome) (p2 : polynome) = 
       match p with
-	  [] -> ((List.rev p1),(List.rev p2))
+	  [] -> (((List.rev p1),(List.rev p2)) : (polynome * polynome))
 	| (dp,cp)::rp -> 
 	  if dp < n/2
 	  then
@@ -176,7 +210,7 @@ struct
   let ajoutDeg (p : polynome) (n : int) =
     let rec aux (p : polynome) (p1 : polynome) (n : int) =
       match p with 
-	  []        -> List.rev p1
+	  []        -> ((List.rev p1) : polynome)
 	| (d, c)::p -> aux p ((d + n, c)::p1) n
     in aux p [] n
   ;;
@@ -207,13 +241,13 @@ struct
 	| (dp,cp)::l -> aux l ((k - dp,cp)::acc)
     in
     if k >= (deg a) then
-      aux (a) []
+      ((aux (a) []) : polynome)
     else
       failwith "il faut k >= (deg a) !!"
   ;;
   
   
-  let pol_mod p q =
+  let pol_mod (p : polynome) (q : polynome) =
     let rec aux acc = function
     [] -> acc
       | (d,c)::l -> 
@@ -222,10 +256,10 @@ struct
 	else 
 	  aux acc l
     in
-    aux [] (List.rev p)
+    ((aux [] (List.rev p)) : polynome)
   ;;
   
-  let gi f borne = 
+  let gi (f : polynome) (borne : float) = 
     let deux = (Ent.somme Ent.unit Ent.unit) in
     let rec aux i g =
       if (2.**i) >= borne then
@@ -238,7 +272,7 @@ struct
     aux 0. [(0,Ent.unit)]
   ;;
   
-  let split a n =
+  let split (a : polynome) (n : int) =
     let rec aux acc p =
       match p with
 	  [] -> acc
@@ -248,7 +282,7 @@ struct
 	  else
 	    (aux acc l)
     in
-    aux [] (List.rev a)
+    ((aux [] (List.rev a)) : polynome )
   ;;
   
   let div (a : polynome) (b : polynome) =
@@ -301,8 +335,10 @@ struct
   *)
 end
 
+
 module E100 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "100" end));;
 module P100 = Polynome(E100);;
+(*
 open P100;;
 let p = [(1,(E100.entier_of_string "3"));(3,(E100.entier_of_string "7"))];;
 let pp = renv (deg p) p;;
@@ -380,7 +416,7 @@ E100.string_of_entier (P100.coeff 3 res);;
 *)
 
 
-
+*)
 
 (* Test dans Z *)
 
@@ -405,3 +441,4 @@ P.string_of_poly p;;
 P.string_of_poly q;;
 
 P.string_of_poly (P.mul p q);;
+
