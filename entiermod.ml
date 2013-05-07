@@ -119,7 +119,7 @@ module N3 = Entier.Make (struct let value = Entier.entier_of_string "3" end);;
 module P3 = Entiermod(Entier)(N3);;
 (* P5 = Z/5Z *)
 module P5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
-
+(*
 P3.("3" $$* "3");;
 
 P5.("5" $$+ "0");;
@@ -130,7 +130,7 @@ P5.($$+) "3" "3";;
 (* string = "1" *)
 P5.inv (P5.("3" $$+ "1324"));;
 (* string = "-2" *)
-
+*)
 
 
 (*

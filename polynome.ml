@@ -25,6 +25,7 @@ sig
   val compare : t -> t -> int;;
   val oppose : t -> t
   val somme : t -> t -> t;;
+  val div : t -> t -> t * t;;
   val mul : t -> t -> t;;
   val string_of_entier : t -> string;;
   val entier_of_string : string -> t;;
@@ -298,8 +299,8 @@ struct
     in
     ((aux [] (List.rev a)) : polynome )
   ;;
-  
-  let div (a : polynome) (b : polynome) =
+  (* @pre (coeff (deg b) b) == 1. *)
+  let sub_div (a : polynome) (b : polynome) =
     let m = deg a
     and n = deg b in
     let s = (gi (renv n b) (float_of_int (m - n + 1))) in
@@ -310,6 +311,31 @@ struct
     (q,r)
   ;;
   
+  let divCoeff (p : polynome) (coeffDom : Ent.t) =
+    let rec aux p acc =
+      match p with
+	  []    -> acc
+	| (d,c)::l -> aux l ((d,(fst (Ent.div c coeffDom)))::acc)
+    in
+    aux (List.rev p) []
+  ;;
+  let mulCoeff (p : polynome) (coeff : Ent.t) = 
+    let rec aux p acc =
+      match p with
+	  []       -> acc
+	| (d,c)::l -> aux l ((d,(Ent.mul c coeff))::acc)
+    in
+    aux (List.rev p) []
+  ;;
+  
+  let div (a : polynome) (b : polynome) =
+    let coeffDom = (coeff (deg b) b) in
+    if ((Ent.compare coeffDom Ent.unit) = 0) then
+      sub_div a b
+    else
+      let res = (sub_div (divCoeff a coeffDom) (divCoeff b coeffDom)) in
+      (fst res),(mulCoeff (snd res) coeffDom)
+  ;;
   
   (* Implantation d'euclide pour le calcul
      du pgcd et de l'inverse de polynomes. *)
@@ -442,6 +468,7 @@ struct
   let compare = Gdnb.compare_gdnb;;
   let oppose = Gdnb.oppose_gdnb;;
   let somme = Gdnb.somme;;
+  let div = Gdnb.div;;
   let mul = Gdnb.mul;;
   let string_of_entier = Gdnb.string_of_gdnb;;
   let entier_of_string = Gdnb.gdnb_of_string;;
