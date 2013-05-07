@@ -1,4 +1,3 @@
-
 (***********************************************************************)
 (*                                                                     *)
 (*                             Projet de CS                            *)
@@ -63,7 +62,8 @@ struct
 (* TP_CS sur les Grands nombre *)
   open String;;
   
-(*let ($+) (a : string) (b : string) = string_of_gdnb (somme (gdnb_of_string a) (gdnb_of_string b));;*)
+(*let ($+) (a : string) (b : string) =
+  string_of_gdnb (somme (gdnb_of_string a) (gdnb_of_string b));;*)
   
 (**
    Base de codage des grand nombres.
@@ -81,7 +81,8 @@ struct
   let unit = {signe = true; abs = [(0,1)];};;
   
 (**
-   Params - s : string (composé d'une suite de chiffre avec eventuellement un '+' ou un '-' en début de chaine).
+   Params - s : string (composé d'une suite de chiffre
+                avec eventuellement un '+' ou un '-' en début de chaine).
    @return n : gdnb correspondant a la chaine s
 *)
   let gdnb_of_string s =
@@ -93,7 +94,11 @@ struct
     in
     let rec aux nb acc b sgn = 
       let n = (if length nb >= 4 then sub nb ((length nb) - 4) 4 else nb) in
-      let add = (if int_of_string n = 0 then [] else [(b,(int_of_string n))])
+      let add =
+	(if int_of_string n = 0 then
+	    []
+	 else
+	    [(b,(int_of_string n))])
       in
       (if length nb > 4
        then
@@ -135,11 +140,21 @@ struct
 	  (match l with
 	      [] -> 
 		let signe = if s = false then "-" else "" in
-		aux ({signe = s; abs = (l)}) (signe^((string_of_int (snd e))^acc)) (i+1)
-	    | _  -> aux ({signe = s; abs = (l)}) ((chiffre_to_string (snd e) base)^acc) (i+1)
+		(aux 
+		   ({signe = s; abs = (l)})
+		   (signe^((string_of_int (snd e))^acc))
+		   (i+1))
+	    | _  ->
+	      (aux
+		 ({signe = s; abs = (l)})
+		 ((chiffre_to_string (snd e) base)^acc)
+		 (i+1))
 	  )
 	| {signe = s; abs = (e::l)} -> 
-	  aux ({signe = s; abs = (e::l)}) ((chiffre_to_string (0) base)^acc) (i+1)
+	  (aux
+	     ({signe = s; abs = (e::l)})
+	     ((chiffre_to_string (0) base)^acc)
+	     (i+1))
     in
     if n.abs = [] then "0" else aux n "" 0
   ;;
@@ -184,7 +199,8 @@ struct
           [], [] -> List.rev res
 	| [], e::rq -> aux [] rq r (e::res)
 	| e::rp, [] -> aux rp [] r (e::res)
-	| ((dp,cp)::rp), ((dq,cq)::rq) when dp < dq -> aux rp q 0 ((dp, cp)::res)
+	| ((dp,cp)::rp), ((dq,cq)::rq) when dp < dq ->
+	  aux rp q 0 ((dp, cp)::res)
 	  
 	| ((dp,cp)::rp), ((dq,cq)::rq) when dp > dq -> aux p rq 0 res
 	  
@@ -195,7 +211,8 @@ struct
 					    else
 					      aux rp [] 0 ((dp, di)::res)
 					  else 
-					    aux rp [(dp + 1, 1)] 0 ((dp, base + di)::res)
+					    (aux rp [(dp + 1, 1)] 0
+					       ((dp, base + di)::res))
 					      
 	| ((dp,cp)::rp), ((dq,cq)::rq) -> let di = (cp - cq - r) in
 					  if (di >= 0) then 
@@ -203,8 +220,9 @@ struct
 					      aux rp rq 0 res
 					    else
 					      aux rp rq 0 ((dp, di)::res)
-					  else 
-					    aux rp rq 1 ((dp, base + di)::res)					    
+					  else
+					    (aux rp rq 1
+					       ((dp, base + di)::res))
     in
     let complete p =
       let rec aux q deg acc =
@@ -233,33 +251,36 @@ struct
           [], [] -> List.rev res
 	| [], e::rq -> aux [] rq 0 (rg_ret + 1) (e::res)
 	| e::rp, [] -> aux rp [] 0 (rg_ret + 1) (e::res)
-	| ((dp,cp)::rp), ((dq,cq)::rq) when dp < dq -> aux rp q 0 (rg_ret + 1) ((dp,cp)::res)
-	| ((dp,cp)::rp), ((dq,cq)::rq) when dp > dq -> aux p rq 0 (rg_ret + 1) ((dq,cq)::res)
-      (* dp = dq *)
-	| ((dp,cp)::rp), ((dq, cq)::rq) when rg_ret < dp && r != 0 -> aux p q 0 (rg_ret + 1) ((rg_ret, 1)::res)
-      (* cas 2 du cour *)
-	| ((dp,cp)::rp), ((dq,cq)::[]) -> let di = if (rg_ret = dp) then (cp + cq + r) else (cp + cq) in
-					  if (rg_ret = dp) then 
-					    if (di >= base) then 
-					      if (di - base > 0) then 
-						aux rp [(dp + 1, 1)] 0 (rg_ret + 1) ((dp, di - base)::res)
-					      else
-						aux rp [(dp + 1, 1)] 0 (rg_ret + 1) res
-					    else 
-					      aux rp [] 0 (rg_ret + 1) ((dp, di)::res)
-					  else 
-					    aux rp [] 0 (rg_ret + 1) ((dp, di)::res)
-      (* cas 1 du cour *)
-	| ((dp,cp)::rp), ((dq,cq)::rq) -> let di = if (rg_ret = dp) then (cp + cq + r) else (cp + cq) in
-					  if (di >= base) then 
-					    if (di - base > 0) then
-					      aux rp rq 1 (rg_ret + 1) ((dp, di - base)::res)
-					    else
-					      aux rp rq 1 (rg_ret + 1) res
-					  else 
-					    aux rp rq 0 (rg_ret + 1) ((dp, di)::res)
-					      
-					      
+	| ((dp,cp)::rp), ((dq,cq)::rq) when dp < dq ->
+	  aux rp q 0 (rg_ret + 1) ((dp,cp)::res)
+	| ((dp,cp)::rp), ((dq,cq)::rq) when dp > dq ->
+	  aux p rq 0 (rg_ret + 1) ((dq,cq)::res)
+	(* dp = dq *)
+	| ((dp,cp)::rp), ((dq, cq)::rq) when rg_ret < dp && r != 0 ->
+	  aux p q 0 (rg_ret + 1) ((rg_ret, 1)::res)
+	(* cas 2 du cour *)
+	| ((dp,cp)::rp), ((dq,cq)::[]) ->
+	  let di = if (rg_ret = dp) then (cp + cq + r) else (cp + cq) in
+	  if (rg_ret = dp) then 
+	    if (di >= base) then 
+	      if (di - base > 0) then 
+		aux rp [(dp + 1, 1)] 0 (rg_ret + 1) ((dp, di - base)::res)
+	      else
+		aux rp [(dp + 1, 1)] 0 (rg_ret + 1) res
+	    else 
+	      aux rp [] 0 (rg_ret + 1) ((dp, di)::res)
+	  else 
+	    aux rp [] 0 (rg_ret + 1) ((dp, di)::res)
+	(* cas 1 du cour *)
+	| ((dp,cp)::rp), ((dq,cq)::rq) ->
+	  let di = if (rg_ret = dp) then (cp + cq + r) else (cp + cq) in
+	  if (di >= base) then 
+	    if (di - base > 0) then
+	      aux rp rq 1 (rg_ret + 1) ((dp, di - base)::res)
+	    else
+	      aux rp rq 1 (rg_ret + 1) res
+	  else 
+	    aux rp rq 0 (rg_ret + 1) ((dp, di)::res)
     in
     let args = if ((compare_gdnb p1 p2) > 0) then (p1,p2) else (p2,p1) in
     let a = (fst args) and b = (snd args) in
@@ -267,7 +288,8 @@ struct
       if a.signe = b.signe then
 	{signe = a.signe; abs=(aux p1.abs p2.abs 0 0 [])}
       else
-	let x = {signe = true; abs = a.abs} and y = {signe = true; abs=b.abs} in
+	let x = {signe = true; abs = a.abs}
+	and y = {signe = true; abs=b.abs} in
 	let res = if ((compare_gdnb x y) > 0) then 
 	    (a.signe, difference x y)
 	  else
@@ -308,7 +330,9 @@ struct
   let separe (ga : gdnb) n = 
     let rec aux p p1 p2 = 
       match p with
-	  [] -> {signe = ga.signe; abs = (List.rev p1)},{signe = ga.signe; abs = (List.rev p2)}
+	  [] ->
+	    ({signe = ga.signe; abs = (List.rev p1)},
+	     {signe = ga.signe; abs = (List.rev p2)})
 	| (dp,cp)::rp -> 
 	  if dp < n/2
 	  then
@@ -358,7 +382,8 @@ struct
   ;;
   
   (**
-     Ajoute n a chaque degre de ga (ce qui revient a multiplier ga par base^n).
+     Ajoute n a chaque degre de ga
+         (ce qui revient a multiplier ga par base^n).
      Params - (ga : gdnb) ; (n : int).
      @return ga * base^n
   *)
@@ -383,13 +408,14 @@ struct
       match m,n with
 	  [],_ when r = 0 -> {signe = a.signe; abs = (List.rev acc)}
 	| [],_ -> aux m n 0 (deg+1) ((deg+1,r)::acc)
-	| (exp,v)::aa,(e2,v2) -> let d = v * v2 + r in
-				 if (d < base) then
-				   aux aa b 0 (exp+e2) ((exp+e2,d)::acc)
-				 else
-				   aux aa b (d / base) (exp+e2) ((exp+e2,d mod base)::acc)
+	| (exp,v)::aa,(e2,v2) ->
+	  let d = v * v2 + r in
+	  if (d < base) then
+	    aux aa b 0 (exp+e2) ((exp+e2,d)::acc)
+	  else
+	    aux aa b (d / base) (exp+e2) ((exp+e2,d mod base)::acc)
     in aux a.abs b 0 0 [];;
-
+  
   let mult a b = 
     let s = (a.signe == b.signe) in
     let rec aux b acc =
@@ -398,25 +424,6 @@ struct
 	| (e,v)::bb -> aux bb (somme acc (mul_n a (e,v)))
     in aux b.abs {signe = s; abs = []};;
   
-(*
-  let rec mul p1 p2 =
-    (*let sgn = (p1.signe && p2.signe) || ((not p1.signe) && (not p2.signe)) in*)
-    let n = max (degPair p1) (degPair p2) in
-    if (n < 1) then
-      (*let res = (coeff n p1.abs) * (coeff n p2.abs) in
-      if (res = 0) then
-	{signe=sgn; abs=[]}
-      else*)
-	mult p1 p2
-    else
-      let a = (separe p1 n) and b = (separe p2 n) in
-      let c0 = mul (fst a) (fst b) and
-	  c2 = mul (snd a) (snd b) in
-      let c1 = (somme (somme (mul (somme (fst a) (snd a)) (somme (fst b) (snd b))) (oppose_gdnb c0)) (oppose_gdnb c2) ) in
-      (somme (somme (c0) (ajoutDeg c1 (n/2))) (ajoutDeg c2 n))
-  ;;
-  *)
-
   (**
      Params - (p : gdnb) (q : gdnb).
      @return p*q : gdnb
@@ -490,7 +497,8 @@ struct
 	  if (compare_gdnb res a) > 0 then
 	    som ll (i-1) accpgm acc2
 	  else
-	    som ll (i-1) res (acc2 @ [(puissance {signe = true; abs = [0,2]} i)])
+	    (som ll (i-1) res
+	       (acc2 @ [(puissance {signe = true; abs = [0,2]} i)]))
     in
     let rec somliste l acc =
       match l with
@@ -502,11 +510,20 @@ struct
 	zero,zero
       else
 	let li = (aux b []) in
-	let pgm_q = (som (List.rev li) ((List.length li) - 1) ({signe = true; abs = []}) []) in
+	let pgm_q =
+	  (som
+	     (List.rev li)
+	     ((List.length li) - 1)
+	     ({signe = true; abs = []})
+	     [])
+	in
 	let pgm = fst pgm_q in
 	let q = somliste (snd pgm_q) {signe=true;abs=[]} in
 	if (compare_gdnb aa zero) < 0 then
-	  (oppose_gdnb (somme unit q)), (oppose_gdnb (somme {signe=true;abs=a.abs} (oppose_gdnb (mul b (somme unit q)))))
+	  (oppose_gdnb (somme unit q)),
+	  (oppose_gdnb (somme
+			  {signe=true;abs=a.abs}
+			  (oppose_gdnb (mul b (somme unit q)))))
 	else
 	  q,(difference a pgm);;
   
@@ -540,36 +557,49 @@ struct
      Calcul l'inverse de a modulo n.
   *)
   let rec inv (a : gdnb) (n : gdnb) =
-    if (compare_gdnb a {signe=true;abs=[]} < 0) then (inv (somme a n) n) else 
-    let (p, u, v) = (euclide a n) in
-    match p with
-	{signe=true;abs=[(0,1)]} -> u
-      | _ -> failwith ((string_of_gdnb a)^" non inversible dans Z/"^(string_of_gdnb n)^"Z");;
+    if (compare_gdnb a {signe=true;abs=[]} < 0)
+    then
+      (inv (somme a n) n)
+    else 
+      let (p, u, v) = (euclide a n) in
+      match p with
+	  {signe=true;abs=[(0,1)]} -> u
+	| _                        ->
+	  failwith ((string_of_gdnb a)
+		    ^" non inversible dans Z/"
+		    ^(string_of_gdnb n)
+		    ^"Z");;
   
-  let ($/) (a : string) (b : string) = string_of_gdnb (fst (div (gdnb_of_string a) (gdnb_of_string b)));;
-  let ($%) (a : string) (b : string) = string_of_gdnb (snd (div (gdnb_of_string a) (gdnb_of_string b)));;
+  let ($/) (a : string) (b : string)  =
+    string_of_gdnb (fst (div (gdnb_of_string a) (gdnb_of_string b)));;
+  let ($%) (a : string) (b : string)  =
+    string_of_gdnb (snd (div (gdnb_of_string a) (gdnb_of_string b)));;
   let ($$/) (a : string) (b : string) =
     let d = (div (gdnb_of_string a) (gdnb_of_string b)) in
     ((string_of_gdnb (fst d)), (string_of_gdnb (snd d)));;
-
+  
   (* Operations sur les gdnb *)
   (**
      Somme de deux gdnb.
   *)
-  let ($+) (a : string) (b : string) = string_of_gdnb (somme (gdnb_of_string a) (gdnb_of_string b));;
+  let ($+) (a : string) (b : string) =
+    string_of_gdnb (somme (gdnb_of_string a) (gdnb_of_string b));;
   (**
      Difference de deux gdnb.
   *)
-  let ($-) (a : string) (b : string) = string_of_gdnb (somme (gdnb_of_string a) (oppose_gdnb(gdnb_of_string b)));;
+  let ($-) (a : string) (b : string) =
+    (string_of_gdnb
+       (somme (gdnb_of_string a) (oppose_gdnb(gdnb_of_string b))));;
   (**
      Multiplication Karatsuba.
   *)
-  let ($*) (a : string) (b : string) = string_of_gdnb (mul (gdnb_of_string a) (gdnb_of_string b))
-  ;;
+  let ($*) (a : string) (b : string) =
+    string_of_gdnb (mul (gdnb_of_string a) (gdnb_of_string b));;
   (**
      Exponentiation dichotomique.
   *)
-  let ($^) (a:string) (n : int) = string_of_gdnb (puissance (gdnb_of_string a) n);;
+  let ($^) (a:string) (n : int) =
+    string_of_gdnb (puissance (gdnb_of_string a) n);;
   
   (**
      Multiplication naive.
@@ -578,11 +608,21 @@ struct
     string_of_gdnb (mult (gdnb_of_string a) (gdnb_of_string b));;
 
   (* Comparaisons sur les gdnb *)  
-  let ($<) (a : string) (b : string) =  if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b))  < 0 then true else false;;
-  let ($>) (a : string) (b : string) =  if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b))  > 0 then true else false;;
-  let ($=) (a : string) (b : string) =  if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b))  = 0 then true else false;;
-  let ($<=) (a : string) (b : string) = if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b)) <= 0 then true else false;;
-  let ($>=) (a : string) (b : string) = if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b)) >= 0 then true else false;;
+  let ($<) (a : string) (b : string) = 
+    if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b)) < 0
+    then true else false;;
+  let ($>) (a : string) (b : string) =
+    if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b)) > 0
+    then true else false;;
+  let ($=) (a : string) (b : string) =
+    if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b)) = 0
+    then true else false;;
+  let ($<=) (a : string) (b : string) =
+    if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b)) <= 0
+    then true else false;;
+  let ($>=) (a : string) (b : string) =
+    if (compare_gdnb (gdnb_of_string a) (gdnb_of_string b)) >= 0
+    then true else false;;
 
 end;;
 (*
@@ -592,8 +632,10 @@ open Gdnb;;
 
 "2400015769" $+ "2400015769";;
 (string_of_gdnb gnbr) $+ (string_of_gdnb gnbr);;
-(string_of_gdnb {signe = false; abs = [(0, 5769); (2, 24)]}) $+ (string_of_gdnb {signe = false; abs = [(0, 5769); (2, 24)]});;
-somme {signe = false; abs = [(0, 5769); (1,0); (2, 24)]} {signe = false; abs = [(0, 5769); (1,0); (2, 24)]};;
+(string_of_gdnb {signe = false; abs = [(0, 5769); (2, 24)]})
+$+ (string_of_gdnb {signe = false; abs = [(0, 5769); (2, 24)]});;
+somme {signe = false; abs = [(0, 5769); (1,0); (2, 24)]}
+      {signe = false; abs = [(0, 5769); (1,0); (2, 24)]};;
 
 string_of_gdnb {signe = true; abs = [(0, 5769); (1, 24)]};;
 
@@ -601,7 +643,8 @@ string_of_gdnb ({signe = false; abs = [(0, 1538); (2, 25)]});;
 (*- : string = "-2500001538"*)
 string_of_gdnb gnbr;;
 (*- : string = "-2400005769"*)
-somme {signe = true; abs = [(0, 5769); (1, 24)]} {signe = true; abs = [(0, 5769); (1, 24)]};;
+somme {signe = true; abs = [(0, 5769); (1, 24)]}
+      {signe = true; abs = [(0, 5769); (1, 24)]};;
 (*- : (int * int) list = [(0, 1538); (1, 25)]*)
 string_of_gdnb {signe = true; abs = [(0, 5769); (1, 24)]};;
 (*- : string = "245769"*)
