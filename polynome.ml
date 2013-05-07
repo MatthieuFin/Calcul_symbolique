@@ -29,6 +29,7 @@ sig
   val mul : t -> t -> t;;
   val string_of_entier : t -> string;;
   val entier_of_string : string -> t;;
+  val inv : t -> t -> t;;
 end
   
   
@@ -71,7 +72,9 @@ end
 module Polynome (Ent : coeff_poly) (*: SigPolynome*)=
 struct
   type polynome = (int * Ent.t) list;;
-  module MakePolynome (*: SigMakePolynome*) = functor (V : sig type polynome = (int * Ent.t) list val value : polynome end) ->
+  module MakePolynome (*: SigMakePolynome*) =
+    functor (V : sig type polynome =
+			 (int * Ent.t) list val value : polynome end) ->
   struct
     type polynome = V.polynome;;
     let value = V.value;;
@@ -94,7 +97,7 @@ struct
 	  [] -> acc
 	| (i,n)::r -> aux r ((i,(Ent.string_of_entier n))::acc)
     in
-    ((aux a []) : polyStr);;
+    ((aux (List.rev a) []) : polyStr);;
   
   let string_of_poly (p : polynome)= 
     let absCoeff (e : Ent.t) =
@@ -147,7 +150,8 @@ struct
 	[], [] -> true
       | ([], _) -> false
       | (_, []) -> false
-      | ((d1,c1)::l1),((d2,c2)::l2) when (d1 = d2  && (Ent.compare c1 c2) = 0) -> 
+      | ((d1,c1)::l1),((d2,c2)::l2)
+	when (d1 = d2  && (Ent.compare c1 c2) = 0) -> 
 	(pol_is_equal l1 l2)
       | _ -> false
   ;;
@@ -243,7 +247,11 @@ struct
       let a = (separe p1 n) and b = (separe p2 n) in
       let c0 = mul (fst a) (fst b) and
 	  c2 = mul (snd a) (snd b) in
-      let c1 = (difference (difference (mul (somme (fst a) (snd a)) (somme (fst b) (snd b))) (c0)) (c2) ) in
+      let c1 = (difference
+		  (difference
+		     (mul (somme (fst a) (snd a)) (somme (fst b) (snd b)))
+		     (c0))
+		  (c2) ) in
       (somme (somme (c0) (ajoutDeg c1 (n/2))) (ajoutDeg c2 n))
   ;;
   
@@ -315,7 +323,12 @@ struct
     let rec aux p acc =
       match p with
 	  []    -> acc
-	| (d,c)::l -> aux l ((d,(fst (Ent.div c coeffDom)))::acc)
+	| (d,c)::l ->
+	  let qr = (Ent.div c coeffDom) in
+	  if (snd qr) = Ent.zero then
+	    aux l ((d,(fst (Ent.div c coeffDom)))::acc)
+	  else
+	    failwith "Polynome a coefficient non entier !"
     in
     aux (List.rev p) []
   ;;
@@ -323,11 +336,20 @@ struct
     let rec aux p acc =
       match p with
 	  []       -> acc
-	| (d,c)::l -> aux l ((d,(Ent.mul c coeff))::acc)
+	| (d,c)::l ->
+	  aux l ((d,(Ent.mul c coeff))::acc)
     in
     aux (List.rev p) []
   ;;
   
+  (*
+    Pour que le resultat soit a coefficient entier il faut que
+    b soit un polynome unitaire.
+    Retourne le quotient et le reste de la division de deux polynomes
+    Levée d'exception si le quotient ou le reste n'est pas a coefficient
+    entier.
+    throws : Exception: Failure "Polynome a coefficient non entier !"
+  *)
   let div (a : polynome) (b : polynome) =
     let coeffDom = (coeff (deg b) b) in
     if ((Ent.compare coeffDom Ent.unit) = 0) then
@@ -362,16 +384,20 @@ struct
     else
       let (a, b, c) = euclide a b in
       a;;
-(*  
+(*
   (**
      Calcul l'inverse de a modulo n.
   *)
   let rec inv (a : gdnb) (n : gdnb) =
-    if (compare_gdnb a {signe=true;abs=[]} < 0) then (inv (somme a n) n) else 
+    if (compare_gdnb a {signe=true;abs=[]} < 0)
+    then (inv (somme a n) n) else 
     let (p, u, v) = (euclide a n) in
     match p with
 	{signe=true;abs=[(0,1)]} -> u
-      | _ -> failwith ((string_of_gdnb a)^" non inversible dans Z/"^(string_of_gdnb n)^"Z");;
+      | _ -> failwith ((string_of_gdnb a)
+                      ^" non inversible dans Z/"
+                      ^(string_of_gdnb n)
+                      ^"Z");;
   *)
 end
 
@@ -472,6 +498,7 @@ struct
   let mul = Gdnb.mul;;
   let string_of_entier = Gdnb.string_of_gdnb;;
   let entier_of_string = Gdnb.gdnb_of_string;;
+  let inv = Gdnb.inv;;
 end
 
 module P = Polynome(Coeff_Z);;

@@ -481,8 +481,9 @@ struct
       Calcul le couple (quotient,reste) 
       de la division de deux gdnb positifs.
   *)
-  let div (aa : gdnb) (b : gdnb) =
+  let div (aa : gdnb) (bb : gdnb) =
     let a = {signe = true; abs = aa.abs} in
+    let b = {signe = true; abs = bb.abs} in
     let rec aux y l =
       if (compare_gdnb y a) > 0 then
 	l
@@ -509,23 +510,31 @@ struct
       if (compare_gdnb a zero) = 0 then 
 	zero,zero
       else
-	let li = (aux b []) in
-	let pgm_q =
-	  (som
-	     (List.rev li)
-	     ((List.length li) - 1)
-	     ({signe = true; abs = []})
-	     [])
+	let res =
+	  let li = (aux b []) in
+	  let pgm_q =
+	    (som
+	       (List.rev li)
+	       ((List.length li) - 1)
+	       ({signe = true; abs = []})
+	       [])
+	  in
+	  let pgm = fst pgm_q in
+	  let q = somliste (snd pgm_q) {signe=true;abs=[]} in
+	  if (compare_gdnb aa zero) < 0 then
+	    (oppose_gdnb (somme unit q)),
+	    (oppose_gdnb (somme
+			    {signe=true;abs=a.abs}
+			    (oppose_gdnb (mul b (somme unit q)))))
+	  else
+	    q,(difference a pgm)
 	in
-	let pgm = fst pgm_q in
-	let q = somliste (snd pgm_q) {signe=true;abs=[]} in
-	if (compare_gdnb aa zero) < 0 then
-	  (oppose_gdnb (somme unit q)),
-	  (oppose_gdnb (somme
-			  {signe=true;abs=a.abs}
-			  (oppose_gdnb (mul b (somme unit q)))))
-	else
-	  q,(difference a pgm);;
+  if (compare_gdnb bb zero) < 0
+  then
+    ((oppose_gdnb (fst res)),(snd res))
+  else
+    res
+  ;;
   
   
   let modulo (a : gdnb) (b : gdnb) = snd (div a b);;    
