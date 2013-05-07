@@ -25,7 +25,7 @@ let rec calc (s : string) =
       let b = read_line (print_string "-> ") in
       let res = Gdnb.($+) a b in
       print_newline (print_string ("# " ^ a ^ " + " ^ b ^ " = " ^ res));
-      calc (read_line ());
+      calc (read_line (print_string "$ "));
     | _ ->
 	(*
       begin
