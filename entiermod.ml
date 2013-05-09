@@ -78,6 +78,7 @@ sig
   val entier_of_string : string -> t
   val compare : t -> t -> int
   val oppose : t -> t
+  val div : t -> t -> t * t
 end
 
 
@@ -99,7 +100,10 @@ struct
   let entier_of_string = E. entier_of_string;;
   let compare (a : t) (b : t) = E.compare (snd (E.div a M.value)) (snd (E.div b M.value));;
   let oppose = E.oppose;;
-  
+  let div (a : t) (b : t) =
+    E.div
+      (snd (E.div a M.value))
+      (snd (E.div b M.value));;
   let ( $$+ ) (a : string) (b : string) = 
     let u = (E.entier_of_string a)
     and v = (E.entier_of_string b)

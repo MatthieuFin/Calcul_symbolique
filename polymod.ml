@@ -25,7 +25,7 @@ end
 module E100 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "100" end));;
 module P100 = Polynome(E100);;
 
-module M = P100.MakePolynome(struct type polynome = P100.polynome let value = P100.poly_of_polyStr [0,"10"] end);;
+module M = P100.MakePolynome(struct type polynome = P100.polynome let value = P100.poly_of_polyStr [(0,"1"); (1,"1"); (2,"1")] end);;
 module P = Polymod(P100)(M);;
 open P;;
-somme [0,"1"] [0,"1"];;
+somme [0,"15"] [(1,"11");(2,"22")];;

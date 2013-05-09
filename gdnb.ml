@@ -521,19 +521,36 @@ struct
 	  in
 	  let pgm = fst pgm_q in
 	  let q = somliste (snd pgm_q) {signe=true;abs=[]} in
-	  if (compare_gdnb aa zero) < 0 then
+	  (*if (compare_gdnb aa zero) < 0 then
 	    (oppose_gdnb (somme unit q)),
 	    (oppose_gdnb (somme
 			    {signe=true;abs=a.abs}
 			    (oppose_gdnb (mul b (somme unit q)))))
-	  else
+	  else*)
 	    q,(difference a pgm)
 	in
-  if (compare_gdnb bb zero) < 0
-  then
-    ((oppose_gdnb (fst res)),(snd res))
-  else
-    res
+	let aaNeg = ((compare_gdnb aa zero) < 0)
+	and bbNeg = ((compare_gdnb bb zero) < 0)
+	in
+	if ((not aaNeg) && bbNeg)
+	then
+	  ((oppose_gdnb (somme (fst res) unit)),
+	   (somme (snd res) (bb)))
+	else
+	  if (aaNeg && (not bbNeg))
+	  then
+	    ((oppose_gdnb (somme (fst res) unit)),
+	     (difference b (snd res)))
+	  else
+	    if (aaNeg && bbNeg) then
+	      let q = (fst res) in
+	      let r = match (snd res) with
+		  {signe = _; abs = l} ->
+		    {signe = false; abs = l}
+	      in
+	      (q,r)
+	    else
+	      res
   ;;
   
   

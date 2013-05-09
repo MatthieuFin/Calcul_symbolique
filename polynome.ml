@@ -29,7 +29,6 @@ sig
   val mul : t -> t -> t;;
   val string_of_entier : t -> string;;
   val entier_of_string : string -> t;;
-  val inv : t -> t -> t;;
 end
   
   
@@ -498,7 +497,6 @@ struct
   let mul = Gdnb.mul;;
   let string_of_entier = Gdnb.string_of_gdnb;;
   let entier_of_string = Gdnb.gdnb_of_string;;
-  let inv = Gdnb.inv;;
 end
 
 module P = Polynome(Coeff_Z);;
