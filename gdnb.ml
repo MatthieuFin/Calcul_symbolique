@@ -16,27 +16,21 @@
 module type gdnb =
 sig
   val base : int
-  type gdnb = { signe : bool; abs : (int * int) list; }
+  type gdnb
   val zero : gdnb
   val unit : gdnb
   val gdnb_of_string : string -> gdnb
   val string_of_gdnb : gdnb -> string
   val compare_gdnb : gdnb -> gdnb -> int
   val nb_rang : 'a -> ('a * int) list -> int
-  val difference : gdnb -> gdnb -> gdnb
-  val som : gdnb -> gdnb -> gdnb
+  val soustraction : gdnb -> gdnb -> gdnb
   val somme : gdnb -> gdnb -> gdnb
   val oppose_gdnb : gdnb -> gdnb
-  val separe : gdnb -> int -> gdnb * gdnb
   val deg : gdnb -> int
-  val degPair : gdnb -> int
-  val max : int -> int -> int
-  val ajoutDeg : gdnb -> int -> gdnb
-  val mul_n : gdnb -> int * int -> gdnb
-  val mult : gdnb -> gdnb -> gdnb
   val mul : gdnb -> gdnb -> gdnb
   val puissance : gdnb -> int -> gdnb
   val div : gdnb -> gdnb -> gdnb * gdnb
+  val quotient : gdnb -> gdnb -> gdnb
   val modulo : gdnb -> gdnb -> gdnb
   val euclide : gdnb -> gdnb -> gdnb * gdnb * gdnb
   val pgcd : gdnb -> gdnb -> gdnb
@@ -48,7 +42,6 @@ sig
   val ( $- ) : string -> string -> string
   val ( $* ) : string -> string -> string
   val ( $^ ) : string -> int -> string
-  val ( $$* ) : string -> string -> string
   val ( $< ) : string -> string -> bool
   val ( $> ) : string -> string -> bool
   val ( $= ) : string -> string -> bool
@@ -305,8 +298,7 @@ struct
      Params - (p1 : gdnb) (p2 : gdnb).
      @return p1 + p2 : gdnb
   *)
-  let somme (a : gdnb) (b : gdnb) = 
-(*    if (List.length a.abs) > (List.length b.abs) then*)
+  let somme (a : gdnb) (b : gdnb) =
     if (compare_gdnb a b) > 0 then
       som a b
     else
@@ -318,7 +310,13 @@ struct
   *)
   let oppose_gdnb (n : gdnb) = {signe = not n.signe; abs = n.abs};;
   
-  
+  (**
+     Params  - a : gdnb.
+     Params  - b : gdnb.
+     @return - : (a - b) : gdnb
+  *)
+  let soustraction (a : gdnb) (b : gdnb) =
+    somme a (oppose_gdnb b);;
   
   (* Karatsuba *)
   
@@ -521,12 +519,6 @@ struct
 	  in
 	  let pgm = fst pgm_q in
 	  let q = somliste (snd pgm_q) {signe=true;abs=[]} in
-	  (*if (compare_gdnb aa zero) < 0 then
-	    (oppose_gdnb (somme unit q)),
-	    (oppose_gdnb (somme
-			    {signe=true;abs=a.abs}
-			    (oppose_gdnb (mul b (somme unit q)))))
-	  else*)
 	    q,(difference a pgm)
 	in
 	let aaNeg = ((compare_gdnb aa zero) < 0)
@@ -553,8 +545,9 @@ struct
 	      res
   ;;
   
-  
-  let modulo (a : gdnb) (b : gdnb) = snd (div a b);;    
+  let quotient (a : gdnb) (b : gdnb) = fst (div a b);;
+
+  let modulo   (a : gdnb) (b : gdnb) = snd (div a b);;
   
   let rec euclide (a : gdnb) (b : gdnb) = 
     if ((compare_gdnb b {signe=true;abs=[]}) = 0) then
@@ -622,16 +615,10 @@ struct
   let ($*) (a : string) (b : string) =
     string_of_gdnb (mul (gdnb_of_string a) (gdnb_of_string b));;
   (**
-     Exponentiation dichotomique.
+     Puissance par exponentiation dichotomique.
   *)
   let ($^) (a:string) (n : int) =
     string_of_gdnb (puissance (gdnb_of_string a) n);;
-  
-  (**
-     Multiplication naive.
-  *)
-  let ($$*) (a : string) (b : string) =
-    string_of_gdnb (mult (gdnb_of_string a) (gdnb_of_string b));;
 
   (* Comparaisons sur les gdnb *)  
   let ($<) (a : string) (b : string) = 

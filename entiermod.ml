@@ -27,17 +27,16 @@ module type SigEntier =
 sig
   module Make (V : sig val value : Gdnb.gdnb end) : MakeEntier
   type t = Gdnb.gdnb
-  val zero : Gdnb.gdnb
-  val unit : Gdnb.gdnb
-  val compare : Gdnb.gdnb -> Gdnb.gdnb -> int
-  val string_of_entier : Gdnb.gdnb -> string
-  val entier_of_string : string -> Gdnb.gdnb
-  val div : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb * Gdnb.gdnb
-  val mul : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
-  val somme : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
-  val inv : Gdnb.gdnb -> Gdnb.gdnb -> Gdnb.gdnb
+  val zero : t
+  val unit : t
+  val compare : t -> t -> int
+  val string_of_entier : t -> string
+  val entier_of_string : string -> t
+  val div : t -> t -> t * t
+  val mul : t -> t -> t
+  val somme : t -> t -> t
+  val inv : t -> t -> t
   val oppose : t -> t
-  
 end
   
 (* Entier Fournit des fonctions sur les gdnb ainsi
@@ -123,7 +122,7 @@ module N3 = Entier.Make (struct let value = Entier.entier_of_string "3" end);;
 module P3 = Entiermod(Entier)(N3);;
 (* P5 = Z/5Z *)
 module P5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
-(*
+
 P3.("3" $$* "3");;
 
 P5.("5" $$+ "0");;
@@ -134,7 +133,7 @@ P5.($$+) "3" "3";;
 (* string = "1" *)
 P5.inv (P5.("3" $$+ "1324"));;
 (* string = "-2" *)
-*)
+
 
 
 (*

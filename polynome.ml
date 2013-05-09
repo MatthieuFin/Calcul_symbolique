@@ -31,8 +31,8 @@ sig
   val entier_of_string : string -> t;;
 end
   
-  
-module type SigPolynome =
+(* module type contenant uniquement les operation de Polynomes *)
+module type SigOperationPolynome =
 sig
   type polynome = (int * Gdnb.gdnb) list;;
   type polyStr = (int * string) list
@@ -42,20 +42,15 @@ sig
   val pol_is_equal : polynome -> polynome -> bool
   val somme : polynome -> polynome -> polynome
   val difference : polynome -> polynome -> polynome
-  val separe : polynome -> int -> polynome * polynome
   val deg : polynome -> int
-  val degPair : polynome -> int
-  val max : int -> int -> int
-  val ajoutDeg : polynome -> int -> polynome
   val mul : polynome -> polynome -> polynome
-  val renv : int -> polynome -> polynome
-  val pol_mod : polynome -> polynome -> polynome
-  val gi : polynome -> float -> polynome
-  val split : polynome -> int -> polynome
   val div : polynome -> polynome -> polynome * polynome
   val euclide : polynome -> polynome -> polynome * polynome * polynome
   val pgcd : polynome -> polynome -> polynome
+  val inv : polynome -> polynome -> polynome
+  val eval_poly : polynome -> string -> string
 end
+
   (*
 module type SigMakePolynome =
   functor (V : sig type polynome val value : polynome end) ->
@@ -66,12 +61,41 @@ sig
   type polynome = (int * Gdnb.gdnb) list;;
   val value : polynome
 end
+
+(* module type complet de Polynome
+avec son module integré Polynome.MakePolynome *)
+module type SigPolynome = functor (Coeff : coeff_poly) ->
+sig
+  type polynome = (int * Gdnb.gdnb) list;;
+  type polyStr = (int * string) list
+  module MakePolynome :
+    functor
+      (V : sig
+        type polynome = (int * Coeff.t) list
+        val value : polynome
+      end) ->
+  sig type polynome = V.polynome val value : V.polynome end
+  val poly_of_polyStr : polyStr -> polynome
+  val polyStr_of_poly : polynome -> polyStr
+  val string_of_poly : polynome -> string
+  val pol_is_equal : polynome -> polynome -> bool
+  val somme : polynome -> polynome -> polynome
+  val difference : polynome -> polynome -> polynome
+  val deg : polynome -> int
+  val mul : polynome -> polynome -> polynome
+  val div : polynome -> polynome -> polynome * polynome
+  val euclide : polynome -> polynome -> polynome * polynome * polynome
+  val pgcd : polynome -> polynome -> polynome
+  val inv : polynome -> polynome -> polynome
+  val eval_poly : polynome -> string -> string
+end
+
   
 (* Polynome a coefficients dans Zn *)
-module Polynome (Ent : coeff_poly) (*: SigPolynome*)=
+module Polynome : SigPolynome = functor (Ent : coeff_poly) ->
 struct
   type polynome = (int * Ent.t) list;;
-  module MakePolynome (*: SigMakePolynome*) =
+  module MakePolynome =
     functor (V : sig type polynome =
 			 (int * Ent.t) list val value : polynome end) ->
   struct
@@ -362,7 +386,7 @@ struct
      du pgcd et de l'inverse de polynomes. *)
   
   let rec euclide (a : polynome) (b : polynome) = 
-    if b = [] then 
+    if b = [] then
       (a, [(0,(Ent.entier_of_string "1"))], [])
     else
       let dd = div a b in
@@ -385,21 +409,31 @@ struct
 	  | Failure "Polynome a coefficient non entier !" -> (euclide b a)
       in
       x;;
-(*
+
   (**
      Calcul l'inverse de a modulo n.
   *)
-  let rec inv (a : gdnb) (n : gdnb) =
-    if (compare_gdnb a {signe=true;abs=[]} < 0)
-    then (inv (somme a n) n) else 
+  let inv (a : polynome) (n : polynome) =
     let (p, u, v) = (euclide a n) in
-    match p with
-	{signe=true;abs=[(0,1)]} -> u
-      | _ -> failwith ((string_of_gdnb a)
-                      ^" non inversible dans Z/"
-                      ^(string_of_gdnb n)
-                      ^"Z");;
-  *)
+    if p = [(0,Ent.unit)]
+    then
+      u
+    else
+      failwith "polynome non inversible !";;
+
+  let eval_poly (p : polynome) (x : string) = 
+    let n = deg p in
+    let e = (coeff n p) in
+    let xx = (Ent.entier_of_string x) in
+    let rec aux (i : int) (acc : Ent.t) = 
+      if (i >= 0)
+      then aux (i-1)
+	(Ent.somme (coeff (i) p) (Ent.mul xx acc))
+      else (Ent.string_of_entier acc)
+    in
+    aux (n-1) e
+  ;;
+
 end
 
 
