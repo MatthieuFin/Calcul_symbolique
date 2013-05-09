@@ -362,7 +362,7 @@ struct
      du pgcd et de l'inverse de polynomes. *)
   
   let rec euclide (a : polynome) (b : polynome) = 
-    if (deg b) < 1 then 
+    if b = [] then 
       (a, [(0,(Ent.entier_of_string "1"))], [])
     else
       let dd = div a b in
@@ -381,8 +381,10 @@ struct
     if b = [] then
       a
     else
-      let (a, b, c) = euclide a b in
-      a;;
+      let (x, y, z) = try (euclide a b) with
+	  | Failure "Polynome a coefficient non entier !" -> (euclide b a)
+      in
+      x;;
 (*
   (**
      Calcul l'inverse de a modulo n.
