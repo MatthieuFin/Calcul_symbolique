@@ -3,8 +3,8 @@
 (*                             Projet de CS                            *)
 (*                                                                     *)
 (* Fichier : entiermod.ml                                              *)
-(* Auteur : Matthieu Fin                                               *)
-(* Date : 16/04/13                                                     *)
+(* Auteur : Fin Matthieu                                               *)
+(* Date : 10/05/13                                                     *)
 (*                                                                     *)
 (*                          Licence informatique 2eme année 2012/2013  *)
 (*                                  UFR-Sciences et Techniques         *)
@@ -112,55 +112,3 @@ struct
     and v = (E.entier_of_string b)
     in (E.string_of_entier (mul u v));;
 end
-
-
-(* Syntax pour creer des Entiermod : *)
-
-(* N3 = module servant pour le modulo de Entiermod *)
-module N3 = Entier.Make (struct let value = Entier.entier_of_string "3" end);;
-(* P3 = Z/3Z *)
-module P3 = Entiermod(Entier)(N3);;
-(* P5 = Z/5Z *)
-module P5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
-
-P3.("3" $$* "3");;
-
-P5.("5" $$+ "0");;
-
-P5.("3" $$+ "2");;
-(* string = "0" *)
-P5.($$+) "3" "3";;
-(* string = "1" *)
-P5.inv (P5.("3" $$+ "1324"));;
-(* string = "-2" *)
-
-
-
-(*
-module Entiermod = functor (Gdnb : gdnb) ->
-struct
-  module Em = 
-  struct
-    let n = Gdnb.gdnb_of_string "5";;
-    let somme (a : Gdnb.gdnb) (b : Gdnb.gdnb) = snd (Gdnb.div (Gdnb.somme a b) n);;
-    let mul (a : Gdnb.gdnb) (b : Gdnb.gdnb) = snd (Gdnb.div (Gdnb.mul a b) n);;
-    let inv (a : Gdnb.gdnb) = Gdnb.inv a n;;
-  end
-  
-  
-  let somme = Em.somme;;
-  let mul = Em.mul;;
-  let inverse = Em.inv;;
-  let inv (a : string) = (Gdnb.string_of_gdnb (Em.inv (Gdnb.gdnb_of_string a)));;
-  let ( $$+ ) (a : string) (b : string) = Gdnb.string_of_gdnb (Em.somme (Gdnb.gdnb_of_string a) (Gdnb.gdnb_of_string b));;
-  let ( $$* ) (a : string) (b : string) = Gdnb.string_of_gdnb (Em.mul (Gdnb.gdnb_of_string a) (Gdnb.gdnb_of_string b));;
-end
-
-
-module P5 = Entiermod(Gdnb);;
-
-P5.("3" $$+ "2");;
-P5.($$+) "3" "3";;
-P5.inv (P5.("3" $$+ "1324"));;
-
-*)

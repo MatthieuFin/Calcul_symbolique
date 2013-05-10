@@ -52,19 +52,15 @@ end
 module Gdnb : gdnb = 
 struct
   
-(* TP_CS sur les Grands nombre *)
   open String;;
   
-(*let ($+) (a : string) (b : string) =
-  string_of_gdnb (somme (gdnb_of_string a) (gdnb_of_string b));;*)
-  
-(**
-   Base de codage des grand nombres.
-*)
+  (**
+     Base de codage des grand nombres.
+  *)
   let base = 10000;;
-(**
-   Type gdnb. Permettant de travailler sur les grands entiers.
-*)
+  (**
+     Type gdnb. Permettant de travailler sur les grands entiers.
+  *)
   type gdnb = {
     signe : bool;
     abs : (int*int)list
@@ -73,11 +69,11 @@ struct
   let zero = {signe = true; abs = [];};;
   let unit = {signe = true; abs = [(0,1)];};;
   
-(**
-   Params - s : string (composé d'une suite de chiffre
-                avec eventuellement un '+' ou un '-' en début de chaine).
-   @return n : gdnb correspondant a la chaine s
-*)
+  (**
+     Params - s : string (composé d'une suite de chiffre
+                  avec eventuellement un '+' ou un '-' en début de chaine).
+     @return n : gdnb correspondant a la chaine s
+  *)
   let gdnb_of_string s =
     let signe_present s =
       (match get s 0 with
@@ -392,15 +388,6 @@ struct
     in aux ga.abs [] n
   ;;
 
-  (* reste plus qu'a faire la multiplication ;) *)
-(*
-  let rec coeff i p = 
-    match p with
-	[] -> 0;
-      | (deg,coef)::l when deg == i -> coef
-      | e::l -> coeff i l
-  ;;
-*)
   let mul_n a b =
     let rec aux m n r deg acc =
       match m,n with
@@ -638,43 +625,3 @@ struct
     then true else false;;
 
 end;;
-(*
-open Gdnb;;
-
-"1234567890123456147258369" $$* "9876543210987654258963714";;
-
-"2400015769" $+ "2400015769";;
-(string_of_gdnb gnbr) $+ (string_of_gdnb gnbr);;
-(string_of_gdnb {signe = false; abs = [(0, 5769); (2, 24)]})
-$+ (string_of_gdnb {signe = false; abs = [(0, 5769); (2, 24)]});;
-somme {signe = false; abs = [(0, 5769); (1,0); (2, 24)]}
-      {signe = false; abs = [(0, 5769); (1,0); (2, 24)]};;
-
-string_of_gdnb {signe = true; abs = [(0, 5769); (1, 24)]};;
-
-string_of_gdnb ({signe = false; abs = [(0, 1538); (2, 25)]});;
-(*- : string = "-2500001538"*)
-string_of_gdnb gnbr;;
-(*- : string = "-2400005769"*)
-somme {signe = true; abs = [(0, 5769); (1, 24)]}
-      {signe = true; abs = [(0, 5769); (1, 24)]};;
-(*- : (int * int) list = [(0, 1538); (1, 25)]*)
-string_of_gdnb {signe = true; abs = [(0, 5769); (1, 24)]};;
-(*- : string = "245769"*)
-
-(* tests *)
-let s = "plop1234";;
-String.get s 0;;
-
-
-String.sub s 4 4 ;;
-
-string_of_gdnb (gdnb_of_string "-12345678");;
-string_of_gdnb (gdnb_of_string "123400005678");;
-string_of_gdnb (gdnb_of_string "000012345678");;
-string_of_gdnb (gdnb_of_string "12340005678");;
-string_of_gdnb (gdnb_of_string "123400005678");;
-string_of_gdnb (gdnb_of_string "1234078");;
-string_of_gdnb (gdnb_of_string "12340078");;
-string_of_gdnb (gdnb_of_string "-123400043078");;
-*)

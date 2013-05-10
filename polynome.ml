@@ -66,7 +66,7 @@ end
 avec son module integré Polynome.MakePolynome *)
 module type SigPolynome = functor (Coeff : coeff_poly) ->
 sig
-  type polynome = (int * Gdnb.gdnb) list;;
+  type polynome = (int * Coeff.t) list
   type polyStr = (int * string) list
   module MakePolynome :
     functor
@@ -88,6 +88,21 @@ sig
   val pgcd : polynome -> polynome -> polynome
   val inv : polynome -> polynome -> polynome
   val eval_poly : polynome -> string -> string
+end
+
+
+module Coeff_Z : coeff_poly =
+struct
+  type t = Gdnb.gdnb;;
+  let zero = Gdnb.zero;;
+  let unit = Gdnb.unit;;
+  let compare = Gdnb.compare_gdnb;;
+  let oppose = Gdnb.oppose_gdnb;;
+  let somme = Gdnb.somme;;
+  let div = Gdnb.div;;
+  let mul = Gdnb.mul;;
+  let string_of_entier = Gdnb.string_of_gdnb;;
+  let entier_of_string = Gdnb.gdnb_of_string;;
 end
 
   
@@ -208,7 +223,7 @@ struct
     somme p1 (opp p2 []);;
   
   
-(* kara *)
+(* Karatsuba *)
   
   let separe (p : polynome) (n : int) = 
     let rec aux (p : polynome) (p1 : polynome) (p2 : polynome) = 
@@ -278,7 +293,7 @@ struct
       (somme (somme (c0) (ajoutDeg c1 (n/2))) (ajoutDeg c2 n))
   ;;
   
-  (* Division de polynome methode de Newton *)
+  (* Division de polynome par la methode de Newton *)
   
   let renv (k : int) (a : polynome) =
     let rec aux p acc =
@@ -435,114 +450,3 @@ struct
   ;;
 
 end
-
-
-module E100 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "100" end));;
-module P100 = Polynome(E100);;
-(*
-open P100;;
-let p = [(1,(E100.entier_of_string "3"));(3,(E100.entier_of_string "7"))];;
-let pp = renv (deg p) p;;
-E100.string_of_entier (P100.coeff 0 p);;
-E100.string_of_entier (P100.coeff 3 p);;
-
-E100.string_of_entier (P100.coeff 0 pp);;
-E100.string_of_entier (P100.coeff 3 pp);;
-
-(*
-let test_euclide = 
-    let r = euclide (poly_of_polyStr [0,"3"]) (poly_of_polyStr [0,"9"]) in
-    match r with
-	a,b,c -> (string_of_poly a),(string_of_poly b),(string_of_poly c);;
-*)
-let test_euclide = 
-    let r = euclide (poly_of_polyStr [(4,"2");(3,"-3");(1,"-3");(0,"-2")]) (poly_of_polyStr [(2,"1");(0,"-1")]) in
-    match r with
-	a,b,c -> (string_of_poly a),(string_of_poly b),(string_of_poly c);;
-
-
-let a = [(0,(E100.entier_of_string "3"));(1,(E100.entier_of_string "2"));(3,(E100.entier_of_string "1"))];;
-let b = [(1,(E100.entier_of_string "1"));(2,(E100.entier_of_string "1"))];;
-
-let pol = pol_mod (renv 2 b) [(2,(E100.entier_of_string "3"))];;
-E100.string_of_entier (P100.coeff 0 pol);;
-E100.string_of_entier (P100.coeff 1 pol);;
-let d = div a b;;
-E100.string_of_entier (P100.coeff 0 (fst d));;
-E100.string_of_entier (P100.coeff 1 (fst d));;
-
-E100.string_of_entier (P100.coeff 0 (snd d));;
-E100.string_of_entier (P100.coeff 1 (snd d));;
-
-(* test affichage ... *)
-string_of_poly (somme (poly_of_polyStr [(0,"1");(1,"3")]) (poly_of_polyStr [(1,"199")]));;
-string_of_poly (somme (poly_of_polyStr [(0,"-3")]) (poly_of_polyStr [(0,"3")]));;
-
-
-
-
-
-
-(*  
-module E5 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "5" end));;
-module P5 = Polynome(E5);;
-let p = [(0,(E5.entier_of_string "3"));(1,(E5.entier_of_string "4"))];;
-(*open P5;;*)
-module E100 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "100" end));;
-module P100 = Polynome(E100);;
-open P100;;
-
-let p = [(0,(E100.entier_of_string "3"));(3,(E100.entier_of_string "7"))];;
-let q = [(0,(E100.entier_of_string "1"));(6,(E100.entier_of_string "-12"))];;
-
-let res = P100.mul p q;;
-E100.string_of_entier (P100.coeff 0 res);;
-E100.string_of_entier (P100.coeff 3 res);;
-E100.string_of_entier (P100.coeff 6 res);;
-E100.string_of_entier (P100.coeff 9 res);;
-
-let p = [(0,(E100.entier_of_string "3"));(1,(E100.entier_of_string "2"))];;
-let q = [(0,(E100.entier_of_string "1"));(2,(E100.entier_of_string "2"))];;
-let res = P100.mul p q;;
-E100.string_of_entier (P100.coeff 0 res);;
-E100.string_of_entier (P100.coeff 1 res);;
-E100.string_of_entier (P100.coeff 2 res);;
-E100.string_of_entier (P100.coeff 3 res);;
-
-let p = [(0,(E100.entier_of_string "3"));(1,(E100.entier_of_string "2"))];;
-let q = [(2,(E100.entier_of_string "2"))];;
-let res = P100.mul p q;;
-E100.string_of_entier (P100.coeff 2 res);;
-E100.string_of_entier (P100.coeff 3 res);;
-*)
-
-
-*)
-
-(* Test dans Z *)
-
-module Coeff_Z : coeff_poly =
-struct
-  type t = Gdnb.gdnb;;
-  let zero = Gdnb.zero;;
-  let unit = Gdnb.unit;;
-  let compare = Gdnb.compare_gdnb;;
-  let oppose = Gdnb.oppose_gdnb;;
-  let somme = Gdnb.somme;;
-  let div = Gdnb.div;;
-  let mul = Gdnb.mul;;
-  let string_of_entier = Gdnb.string_of_gdnb;;
-  let entier_of_string = Gdnb.gdnb_of_string;;
-end
-
-module P = Polynome(Coeff_Z);;
-let p = P.poly_of_polyStr [(0, "-3"); (3, "7")];;
-let q = P.poly_of_polyStr [(0, "1"); (6, "-12")];;
-
-P.string_of_poly p;;
-P.string_of_poly q;;
-
-P.string_of_poly (P.mul p q);;
-
-
-
