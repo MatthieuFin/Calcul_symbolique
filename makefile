@@ -19,4 +19,3 @@ clean :
 # sous Linux
 	rm -f $(executable) $(executable).cmo $(executable).cmi
 
-#ocamlc -o calc gdnb.ml calc.ml

@@ -1,7 +1,22 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                             Projet de CS                            *)
+(*                                                                     *)
+(* Fichier : jeuxExemples.ml                                           *)
+(* Auteurs : Fin Matthieu                                              *)
+(*           Poinsot Clement                                           *)
+(* Date : 10/05/13                                                     *)
+(*                                                                     *)
+(*                          Licence informatique 2eme année 2012/2013  *)
+(*                                  UFR-Sciences et Techniques         *)
+(*                                     Université de Rouen             *)
+(*                                                                     *)
+(***********************************************************************)
+
 #use "polymod.ml";;
 
 
-(************************* Exemples de Z/nZ *************************)
+(************************** Exemples de Z/nZ **************************)
 
 (* N3 = module servant pour le modulo de Entiermod *)
 module N3 = Entier.Make (
@@ -36,10 +51,11 @@ E5.($$+) "3" "3";;
 
 (* 100Z *)
 
-module E100 = Entiermod(Entier)(Entier.Make (struct let value = Entier.entier_of_string "100" end));;
+module E100 = Entiermod(Entier)(Entier.Make (
+  struct let value = Entier.entier_of_string "100" end));;
 
 
-(********************** Exemples de Zn[X]/P(X) **********************)
+(*********************** Exemples de Zn[X]/P(X) ***********************)
 
 (* Z[X] : polynomes a coefficients entiers *)
 module P = Polynome(Coeff_Z);;
@@ -77,6 +93,8 @@ module P100ModN = Polymod(P100)(N);;
 
 (* A savoir :
    x4 - x 3 + x2 - x + 8 = (x2 + 3x + 1)(x2 - 4x + 12) - 33x - 4 *)
-P100ModN.somme [(0, "7"); (1, "-1"); (2, "1"); (3, "-1"); (4, "1")] [(0, "1")];;
+P100ModN.somme [(0, "7"); (1, "-1"); (2, "1"); (3, "-1"); (4, "1")]
+               [(0, "1")];;
 
-P100ModN.mul [(0, "7"); (1, "-1"); (2, "1"); (3, "-1"); (4, "1")] [(0, "1")];;
+P100ModN.mul [(0, "7"); (1, "-1"); (2, "1"); (3, "-1"); (4, "1")]
+             [(0, "1")];;

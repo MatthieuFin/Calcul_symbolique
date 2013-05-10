@@ -3,8 +3,9 @@
 (*                             Projet de CS                            *)
 (*                                                                     *)
 (* Fichier : polynome.ml                                               *)
-(* Auteur : Matthieu Fin                                               *)
-(* Date : 16/04/13                                                     *)
+(* Auteurs : Matthieu Fin                                              *)
+(*           Poinsot Clement                                           *)
+(* Date : 10/05/13                                                     *)
 (*                                                                     *)
 (*                          Licence informatique 2eme année 2012/2013  *)
 (*                                  UFR-Sciences et Techniques         *)
@@ -12,7 +13,6 @@
 (*                                                                     *)
 (***********************************************************************)
 
-(*# use "gdnb.ml";;*)
 # use "entiermod.ml";;
 
 (* Type minimum des modules pouvant 

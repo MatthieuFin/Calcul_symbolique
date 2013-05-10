@@ -3,7 +3,8 @@
 (*                             Projet de CS                            *)
 (*                                                                     *)
 (* Fichier : entiermod.ml                                              *)
-(* Auteur : Fin Matthieu                                               *)
+(* Auteurs : Fin Matthieu                                              *)
+(*           Poinsot Clement                                           *)
 (* Date : 10/05/13                                                     *)
 (*                                                                     *)
 (*                          Licence informatique 2eme année 2012/2013  *)
@@ -93,11 +94,13 @@ struct
     snd (E.div (E.somme a b) M.value);;
   let mul   (a : t) (b : t) =
     snd (E.div (E.mul a b) M.value);;
-  let inv   (a : string)              = (E.string_of_entier (E.inv (E.entier_of_string a) M.value));;
+  let inv (a : string) =
+    (E.string_of_entier (E.inv (E.entier_of_string a) M.value));;
   
   let string_of_entier = E.string_of_entier;;
   let entier_of_string = E. entier_of_string;;
-  let compare (a : t) (b : t) = E.compare (snd (E.div a M.value)) (snd (E.div b M.value));;
+  let compare (a : t) (b : t) =
+    E.compare (snd (E.div a M.value)) (snd (E.div b M.value));;
   let oppose = E.oppose;;
   let div (a : t) (b : t) =
     E.div
