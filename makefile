@@ -4,7 +4,7 @@ LDFLAGS = gdnb.ml calc.ml
 OBJECTS = gdnb.cmo gdnb.cmi calc.cmo calc.cmi
 executable = calc
 
-all : executable
+all : executable doc
 
 executable : $(LDFLAGS) 
 	$(CC) -o $(executable) $(LDFLAGS) 
